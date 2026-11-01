@@ -7,7 +7,10 @@ Models the modified ``ecRecover`` precompile at ``0x00...01``:
   3. charge (COLD_ACCOUNT_ACCESS | WARM_ACCESS) + one WARM_ACCESS for the read
   4. warm the recovered address, record the read, load *raw* code
   5. return the 32-byte address only if raw code is empty or exactly
-     ``0xef0100 || delegate``; otherwise return empty output
+     ``0xef0100 || delegate``; otherwise return empty output. With
+     ``allow_eip8476_opt_out_marker=True`` the exact three-byte marker
+     ``0xef0200`` is also eligible (the change proposed in
+     ethereum/EIPs#12605); the default ``False`` models EIP-8151 as drafted.
 
 Both success and rejection return ``success = 1`` with empty vs 32-byte output.
 The precompile only reads; it never follows the delegation indicator.
