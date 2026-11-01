@@ -137,7 +137,7 @@ class TestConformanceVectors(unittest.TestCase):
                 result = eip8151.ecrecover_precompile(
                     db, _bytes(vector["digest"]), vector["v"],
                     int(vector["r"], 16), int(vector["s"], 16),
-                    opt_out_eligible=True,
+                    allow_eip8476_opt_out_marker=True,
                 )
                 self.assertEqual(_hex(result.output), vector["output"])
                 self.assertEqual(result.permitted, vector["permitted"])

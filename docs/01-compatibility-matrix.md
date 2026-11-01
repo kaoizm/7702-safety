@@ -18,10 +18,11 @@ state-trie `codeHash` remains `keccak256(0xef0200)`.
 | `0xef0200` | EIP-8476 opt-out | `0x` (code); `keccak256("")` (EXTCODEHASH) | **rejected**[^draft] | **skipped** | valid |
 | anything else | contract | raw | **rejected** | skipped (not an EOA) | invalid |
 
-[^draft]: As drafted for EIP-8151. [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605)
-    proposes accepting exactly `0xef0200` with unchanged gas accounting; the
+[^draft]: This row shows the behaviour of the **current EIP-8151 draft**, which
+    is not activated. [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605)
+    proposes accepting exactly `0xef0200` with unchanged gas accounting; that
     proposed behaviour is modelled separately and covered by the
-    `eip8151_proposed` vectors. Until that PR merges, this row is the standard.
+    `eip8151_proposed` vectors.
 
 Two rows are easy to confuse and matter operationally:
 
@@ -51,7 +52,8 @@ Two rows are easy to confuse and matter operationally:
 1. Never auto-approve an authorization tuple; decode `(chain_id, address, nonce)`.
 2. Offer `0xef0200` opt-out for accounts that will never delegate.
 3. If migrating to wallet code, prefer `0xef0101` only after confirming no
-   `permit`-based integrations remain (EIP-8151 breaks them by design).
+   `permit`-based integrations remain (under the current EIP-8151 draft those
+   approvals fail).
 4. Use ERC-8010 wrapped signatures when accepting signatures for accounts whose
    delegation has not landed yet.
 

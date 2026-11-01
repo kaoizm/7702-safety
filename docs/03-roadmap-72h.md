@@ -38,9 +38,9 @@ Objective: a repo a spec author can clone, run, and cite — not a product.
 ## Follow-ups
 
 - [ ] If `ethereum/EIPs#12605` merges, flip the `eip8151.ecrecover_precompile`
-      default to `opt_out_eligible=True`, regenerate the vectors, and update the
-      compatibility-matrix footnote so the default no longer describes the old
-      draft.
+      default to `allow_eip8476_opt_out_marker=True`, regenerate the vectors, and
+      update the compatibility-matrix footnote so the default no longer
+      describes the old draft.
 - [ ] If ERC-8010's layout is resolved (F-1), pin the chosen order and remove
       the dual-layout codec path.
 

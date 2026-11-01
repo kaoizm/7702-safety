@@ -64,14 +64,15 @@ def ecrecover_precompile(
     s: int,
     *,
     gas_limit: int | None = None,
-    opt_out_eligible: bool = False,
+    allow_eip8476_opt_out_marker: bool = False,
 ) -> ECRecoverResult:
     """Model the modified precompile.
 
-    ``opt_out_eligible=False`` implements EIP-8151 as drafted, where the
-    EIP-8476 marker ``0xef0200`` is rejected. ``True`` implements the change
-    proposed in ethereum/EIPs#12605, where an opted-out account remains an
-    eligible EOA for ``ecrecover``-based flows such as ERC-2612 ``permit``.
+    ``allow_eip8476_opt_out_marker=False`` (the default) implements EIP-8151 as
+    drafted, where the exact EIP-8476 marker ``0xef0200`` is rejected. ``True``
+    implements the change proposed in ethereum/EIPs#12605, where an opted-out
+    account remains an eligible EOA for ``ecrecover``-based flows such as
+    ERC-2612 ``permit``.
     """
     gas_used = BASE_GAS
     if gas_limit is not None and gas_used > gas_limit:
@@ -95,7 +96,7 @@ def ecrecover_precompile(
     db.accessed_addresses.add(recovered)
     raw_code = db.get_raw_code(recovered)
     permitted = is_permitted_ecrecover(
-        raw_code, opt_out_eligible=opt_out_eligible
+        raw_code, allow_eip8476_opt_out_marker=allow_eip8476_opt_out_marker
     )
 
     if permitted:

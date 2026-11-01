@@ -54,7 +54,8 @@ class TestProposedOptOutEligibility(unittest.TestCase):
     def test_marker_eligible_only_under_proposed_rule(self):
         self.assertFalse(markers.is_permitted_ecrecover(b"\xef\x02\x00"))
         self.assertTrue(
-            markers.is_permitted_ecrecover(b"\xef\x02\x00", opt_out_eligible=True))
+            markers.is_permitted_ecrecover(
+                b"\xef\x02\x00", allow_eip8476_opt_out_marker=True))
         self.assertTrue(markers.is_permitted_ecrecover(b""))
         self.assertFalse(
             markers.is_permitted_ecrecover(b"\xef\x01\x01" + DELEGATE))

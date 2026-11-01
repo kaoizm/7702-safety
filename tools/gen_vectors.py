@@ -176,7 +176,7 @@ def build() -> dict:
     ):
         db = eip8151.AccountDB(raw_code={signer: code})
         outcome = eip8151.ecrecover_precompile(
-            db, DIGEST, v, r, s, opt_out_eligible=True)
+            db, DIGEST, v, r, s, allow_eip8476_opt_out_marker=True)
         doc["eip8151_proposed"].append(
             {
                 "name": name,

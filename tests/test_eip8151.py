@@ -53,7 +53,7 @@ class TestECRecoverRestriction(unittest.TestCase):
         # authorization, so the marker is eligible under the proposed clause.
         db = make_db(OPT_OUT_MARKER)
         result = eip8151.ecrecover_precompile(
-            db, DIGEST, V, R, S, opt_out_eligible=True)
+            db, DIGEST, V, R, S, allow_eip8476_opt_out_marker=True)
         self.assertTrue(result.permitted)
         self.assertEqual(result.output, ADDR.rjust(32, b"\x00"))
         self.assertEqual(result.gas_used, 6100)
