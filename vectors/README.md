@@ -41,7 +41,8 @@ schema and the content cannot drift silently.
 | `authorization` | `chain_id`, `delegate`, `nonce`, `signing_hash`, `r`, `s`, `y_parity`, `authority` | EIP-7702 tuple; `authority` is the recovered EOA |
 | `markers` | `code`, `kind`, `delegate`, `evm_visible_code`, `eip8151_permitted` | code classification |
 | `eip7851` | `label`, `input_code`, `delegate`, `success`, `new_code`, `gas_used`, `reason` | `SETSELFDELEGATE` transition |
-| `eip8151` | `signer`, `digest`, `account_code`, `v`, `r`, `s`, `output`, `permitted`, `gas_cold`, `gas_warm` | precompile result, first and second call |
+| `eip8151` | `signer`, `digest`, `account_code`, `v`, `r`, `s`, `output`, `permitted`, `gas_cold`, `gas_warm` | precompile result, first and second call (spec as drafted) |
+| `eip8151_proposed` | `name`, `signer`, `digest`, `account_code`, `v`, `r`, `s`, `output`, `permitted`, `gas_used` | same, with the EIP-8476 marker clause proposed in ethereum/EIPs#12605 |
 | `eip8476` | `case`, `input_code`, `tx`, `current_chain_id`, `status`, `reason`, `new_code`, `gas_used`, `already_marked` | opt-out transaction validity and transition |
 | `erc8010` | `layout`, `wrapped`, `signature`, `init_to`, `init_data`, `delegated`, `layouts_conflict` | wrapped-signature codec |
 

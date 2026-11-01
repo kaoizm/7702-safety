@@ -50,6 +50,16 @@ class TestEip8151Predicate(unittest.TestCase):
         self.assertFalse(markers.is_eip7702_delegated(b"\x60"))
 
 
+class TestProposedOptOutEligibility(unittest.TestCase):
+    def test_marker_eligible_only_under_proposed_rule(self):
+        self.assertFalse(markers.is_permitted_ecrecover(b"\xef\x02\x00"))
+        self.assertTrue(
+            markers.is_permitted_ecrecover(b"\xef\x02\x00", opt_out_eligible=True))
+        self.assertTrue(markers.is_permitted_ecrecover(b""))
+        self.assertFalse(
+            markers.is_permitted_ecrecover(b"\xef\x01\x01" + DELEGATE))
+
+
 class TestEip8476Visibility(unittest.TestCase):
     def test_opted_out_executes_as_empty(self):
         self.assertEqual(markers.evm_visible_code(b"\xef\x02\x00"), b"")

@@ -48,6 +48,16 @@ class TestECRecoverRestriction(unittest.TestCase):
         self.assertFalse(result.permitted)
         self.assertEqual(result.output, b"")
 
+    def test_opt_out_marker_permitted_under_proposed_rule(self):
+        # ethereum/EIPs#12605: an opted-out account keeps ordinary ECDSA
+        # authorization, so the marker is eligible under the proposed clause.
+        db = make_db(OPT_OUT_MARKER)
+        result = eip8151.ecrecover_precompile(
+            db, DIGEST, V, R, S, opt_out_eligible=True)
+        self.assertTrue(result.permitted)
+        self.assertEqual(result.output, ADDR.rjust(32, b"\x00"))
+        self.assertEqual(result.gas_used, 6100)
+
     def test_contract_code_rejected(self):
         db = make_db(b"\x60\x00\x60\x00\xf3")
         result = eip8151.ecrecover_precompile(db, DIGEST, V, R, S)

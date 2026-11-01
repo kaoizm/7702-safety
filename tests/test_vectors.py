@@ -40,7 +40,7 @@ class TestConformanceVectors(unittest.TestCase):
         self.assertEqual(self.doc["meta"]["format"], "conformance-vectors/v1")
         for section in (
             "keccak256", "secp256k1", "authorization", "markers",
-            "eip7851", "eip8151", "eip8476", "erc8010",
+            "eip7851", "eip8151", "eip8151_proposed", "eip8476", "erc8010",
         ):
             with self.subTest(section=section):
                 self.assertIn(section, self.doc)
@@ -127,6 +127,21 @@ class TestConformanceVectors(unittest.TestCase):
                 self.assertEqual(cold.permitted, vector["permitted"])
                 self.assertEqual(cold.gas_used, vector["gas_cold"])
                 self.assertEqual(warm.gas_used, vector["gas_warm"])
+
+    def test_eip8151_proposed(self) -> None:
+        for vector in self.doc["eip8151_proposed"]:
+            with self.subTest(name=vector["name"]):
+                db = eip8151.AccountDB(
+                    raw_code={_bytes(vector["signer"]): _bytes(vector["account_code"])}
+                )
+                result = eip8151.ecrecover_precompile(
+                    db, _bytes(vector["digest"]), vector["v"],
+                    int(vector["r"], 16), int(vector["s"], 16),
+                    opt_out_eligible=True,
+                )
+                self.assertEqual(_hex(result.output), vector["output"])
+                self.assertEqual(result.permitted, vector["permitted"])
+                self.assertEqual(result.gas_used, vector["gas_used"])
 
     def test_eip8476(self) -> None:
         for vector in self.doc["eip8476"]:

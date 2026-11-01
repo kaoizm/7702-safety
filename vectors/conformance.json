@@ -458,6 +458,56 @@
       "already_marked": false
     }
   ],
+  "eip8151_proposed": [
+    {
+      "name": "plain_eoa",
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
+      "account_code": "0x",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x00000000000000000000000019e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "permitted": true,
+      "gas_used": 6100
+    },
+    {
+      "name": "delegated",
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
+      "account_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x00000000000000000000000019e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "permitted": true,
+      "gas_used": 6100
+    },
+    {
+      "name": "opt_out",
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
+      "account_code": "0xef0200",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x00000000000000000000000019e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "permitted": true,
+      "gas_used": 6100
+    },
+    {
+      "name": "ecdsa_disabled",
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
+      "account_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x",
+      "permitted": false,
+      "gas_used": 6100
+    }
+  ],
   "erc8010": [
     {
       "layout": "signer",

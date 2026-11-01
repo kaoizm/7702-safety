@@ -45,7 +45,7 @@ dangerous — two implementations disagreeing about *what was signed*.
 order — and state the ABI types explicitly in both sections. Add the round-trip
 vectors from `vectors/conformance.json`.
 
-## F-2 — EIP-8151's predicate rejects the EIP-8476 marker (OPEN, cross-EIP)
+## F-2 — EIP-8151's predicate rejects the EIP-8476 marker (ACKNOWLEDGED; fix proposed)
 
 EIP-8151's `ecrecover` restriction accepts only:
 
@@ -75,6 +75,13 @@ is_permitted = (
 
 **Suggestion:** if both drafts ship, EIP-8151 must add the third clause and both
 specs should reference each other explicitly.
+
+**Status (2026-11-01):** accepted as a genuine compatibility issue by the
+EIP-8476 author, who clarified in `ethereum/EIPs#12600` commit `56ec531` that
+opt-out "removes only EIP-7702 delegation capability", so opted-out accounts
+retain `ecrecover`-based flows such as ERC-2612 `permit`. The predicate change
+is proposed in **ethereum/EIPs#12605**; both the current (rejecting) and
+proposed (accepting) behaviours are modelled here and shipped as vectors.
 
 ## F-3 — EIP-8476 over an existing delegation (RESOLVED upstream)
 

@@ -80,3 +80,15 @@ def is_eip7702_delegated(code: bytes) -> bool:
     return len(code) == 0 or (
         len(code) == DELEGATION_LENGTH and code[:3] == DELEGATION_PREFIX
     )
+
+
+def is_permitted_ecrecover(code: bytes, *, opt_out_eligible: bool = False) -> bool:
+    """EIP-8151 predicate with the proposed EIP-8476 marker clause.
+
+    ``opt_out_eligible=False`` is the spec as drafted (the marker is rejected).
+    ``True`` is the change proposed in ethereum/EIPs#12605: an opted-out account
+    keeps ordinary EOA authorization, so ``0xef0200`` is eligible.
+    """
+    if is_eip7702_delegated(code):
+        return True
+    return opt_out_eligible and classify(code) is CodeKind.OPT_OUT

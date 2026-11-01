@@ -52,6 +52,7 @@ def build() -> dict:
         "eip7851": [],
         "eip8151": [],
         "eip8476": [],
+        "eip8151_proposed": [],
         "erc8010": [],
     }
 
@@ -161,6 +162,33 @@ def build() -> dict:
                 "permitted": cold.permitted,
                 "gas_cold": cold.gas_used,
                 "gas_warm": warm.gas_used,
+            }
+        )
+
+    # EIP-8151 as proposed in ethereum/EIPs#12605: the EIP-8476 opt-out marker
+    # is eligible for ecrecover. Kept separate from the current-spec section so
+    # implementers can target either.
+    for name, code in (
+        ("plain_eoa", b""),
+        ("delegated", DELEGATION_PREFIX + DELEGATE_A),
+        ("opt_out", OPT_OUT_MARKER),
+        ("ecdsa_disabled", ECDSA_DISABLED_PREFIX + DELEGATE_A),
+    ):
+        db = eip8151.AccountDB(raw_code={signer: code})
+        outcome = eip8151.ecrecover_precompile(
+            db, DIGEST, v, r, s, opt_out_eligible=True)
+        doc["eip8151_proposed"].append(
+            {
+                "name": name,
+                "signer": hx(signer),
+                "digest": hx(DIGEST),
+                "account_code": hx(code),
+                "v": v,
+                "r": hex(r),
+                "s": hex(s),
+                "output": hx(outcome.output),
+                "permitted": outcome.permitted,
+                "gas_used": outcome.gas_used,
             }
         )
 

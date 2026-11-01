@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .crypto import secp256k1
-from .markers import is_eip7702_delegated
+from .markers import is_permitted_ecrecover
 
 BASE_GAS = 3000
 COLD_ACCOUNT_ACCESS = 3000
@@ -64,7 +64,15 @@ def ecrecover_precompile(
     s: int,
     *,
     gas_limit: int | None = None,
+    opt_out_eligible: bool = False,
 ) -> ECRecoverResult:
+    """Model the modified precompile.
+
+    ``opt_out_eligible=False`` implements EIP-8151 as drafted, where the
+    EIP-8476 marker ``0xef0200`` is rejected. ``True`` implements the change
+    proposed in ethereum/EIPs#12605, where an opted-out account remains an
+    eligible EOA for ``ecrecover``-based flows such as ERC-2612 ``permit``.
+    """
     gas_used = BASE_GAS
     if gas_limit is not None and gas_used > gas_limit:
         raise OutOfGas("base gas")
@@ -86,7 +94,9 @@ def ecrecover_precompile(
 
     db.accessed_addresses.add(recovered)
     raw_code = db.get_raw_code(recovered)
-    permitted = is_eip7702_delegated(raw_code)
+    permitted = is_permitted_ecrecover(
+        raw_code, opt_out_eligible=opt_out_eligible
+    )
 
     if permitted:
         return ECRecoverResult(
