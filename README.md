@@ -73,7 +73,8 @@ Seven specification issues are documented in
 
 F-3 (opt-out over an existing delegation) and F-4 (cross-chain scope) were
 resolved in EIP-8476 revision `f1a4071`; F-6 is acknowledged there as a
-deliberate tradeoff.
+deliberate tradeoff. F-5 (EIP-7851 opcode TBD) is an upstream gap, not an action
+for this repo.
 
 
 ## For contributors and agents

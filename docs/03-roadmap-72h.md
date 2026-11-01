@@ -11,7 +11,7 @@ Objective: a repo a spec author can clone, run, and cite — not a product.
 - [x] EIP-8151 precompile + gas model
 - [x] EIP-8476 opt-out transition + visibility rules
 - [x] ERC-8010 codec, parser, verifier procedure
-- [x] 58 tests green
+- [x] 61 tests green
 
 ## Hour 8–24 (next)
 

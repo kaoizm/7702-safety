@@ -16,8 +16,9 @@ Two kinds of reports are welcome:
    issue referencing `docs/02-findings.md` and the next free `F-N` id.
 
 For anything that could affect a live deployment (exchanges, wallets, clients),
-**do not open a public issue**. Contact the maintainers privately first and give
-14 days for coordination before disclosure.
+**do not open a public issue**. Use GitHub's private vulnerability reporting
+(Security tab -> "Report a vulnerability") and give 14 days for coordination
+before disclosure.
 
 ## Out of scope
 
