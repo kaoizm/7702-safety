@@ -71,8 +71,9 @@ Seven specification issues are documented in
   conforming verifier. Reported on `ethereum/ERCs#1186`.
 - **F-2** — EIP-8151's `ecrecover` predicate rejects the EIP-8476 `0xef0200`
   marker, which breaks `permit`-style flows for opted-out accounts that EIP-8476
-  says should behave like ordinary EOAs. **Acknowledged by the EIP-8476 author;
-  fix proposed in [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605).**
+  says should behave like ordinary EOAs. **Acknowledged by the EIP-8476 author,
+  reviewed and endorsed as matching the intended semantics; fix proposed in
+  [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605).**
 
 F-3 (opt-out over an existing delegation) and F-4 (cross-chain scope) were
 resolved in EIP-8476 revision `f1a4071`; F-6 is acknowledged there as a

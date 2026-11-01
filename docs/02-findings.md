@@ -80,8 +80,11 @@ specs should reference each other explicitly.
 EIP-8476 author, who clarified in `ethereum/EIPs#12600` commit `56ec531` that
 opt-out "removes only EIP-7702 delegation capability", so opted-out accounts
 retain `ecrecover`-based flows such as ERC-2612 `permit`. The predicate change
-is proposed in **ethereum/EIPs#12605**; both the current (rejecting) and
-proposed (accepting) behaviours are modelled here and shipped as vectors.
+is proposed in **ethereum/EIPs#12605**. The EIP-8476 author reviewed that change
+and confirmed it matches the intended semantics (permanent opt-out without
+revoking ordinary EOA ECDSA authorization); it now awaits review from the
+EIP-8151 authors. Both the current (rejecting) and proposed (accepting)
+behaviours are modelled here and shipped as vectors.
 
 ## F-3 — EIP-8476 over an existing delegation (RESOLVED upstream)
 
