@@ -26,7 +26,7 @@ Objective: a repo a spec author can clone, run, and cite — not a product.
 - [ ] `0xef0200` reference implementation as a Foundry test (no client needed):
       a mock state machine that mirrors `eip8476.py`
 - [ ] Geth `checkDelegationLimit` patch proposal text (F-6)
-- [ ] `docs/03-threat-model.md`: signing-path failure taxonomy, Binance 14 as case study
+- [ ] `docs/04-threat-model.md`: signing-path failure taxonomy, Binance 14 as case study
 
 ## Hour 48–72
 

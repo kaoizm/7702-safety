@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use these vectors or findings, please cite this repository."
+title: "7702-safety: executable conformance suite for EIP-7702 security standards"
+type: software
+authors:
+  - name: "7702-safety contributors"
+repository-code: "https://github.com/kaoizm/7702-safety"
+url: "https://github.com/kaoizm/7702-safety"
+license: MIT
+version: 0.1.0
+date-released: 2026-11-01
+keywords:
+  - ethereum
+  - eip-7702
+  - eip-7851
+  - eip-8151
+  - eip-8476
+  - erc-8010
+  - account-abstraction
+  - security
+  - conformance-testing
+abstract: >-
+  Dependency-free reference models and portable JSON conformance vectors for the
+  EIP-7702 security standards, with a compatibility matrix and seven documented
+  specification findings.

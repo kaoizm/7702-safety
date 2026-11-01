@@ -1,5 +1,7 @@
 # 7702-safety
 
+[![CI](https://github.com/kaoizm/7702-safety/actions/workflows/ci.yml/badge.svg)](https://github.com/kaoizm/7702-safety/actions/workflows/ci.yml)
+
 **An executable conformance suite for the EIP-7702 security standards.**
 
 The 29 October 2026 Binance incident was not a cryptographic break. A signing path
