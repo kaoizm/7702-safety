@@ -35,6 +35,15 @@ Objective: a repo a spec author can clone, run, and cite — not a product.
 - [ ] First measurement on mainnet + one L2, methodology documented
 - [ ] Publish: X thread + ethresear.ch draft, linking the repo and F-1
 
+## Follow-ups
+
+- [ ] If `ethereum/EIPs#12605` merges, flip the `eip8151.ecrecover_precompile`
+      default to `opt_out_eligible=True`, regenerate the vectors, and update the
+      compatibility-matrix footnote so the default no longer describes the old
+      draft.
+- [ ] If ERC-8010's layout is resolved (F-1), pin the chosen order and remove
+      the dual-layout codec path.
+
 ## Definition of done
 
 1. `python run_tests.py` green on a clean machine with no pip install.
