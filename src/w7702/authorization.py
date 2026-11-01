@@ -38,8 +38,9 @@ class Authorization:
             + rlp.encode([self.chain_id, self.address, self.nonce])
         )
 
-    def sign(self, private_key: int, nonce: int) -> "Authorization":
-        r, s, y_parity = secp256k1.sign(self.signing_hash(), private_key, nonce)
+    def sign(self, private_key: int, k: int) -> "Authorization":
+        """Sign with an explicit ECDSA nonce ``k`` (never reuse it)."""
+        r, s, y_parity = secp256k1.sign(self.signing_hash(), private_key, k)
         return Authorization(
             chain_id=self.chain_id,
             address=self.address,
@@ -63,14 +64,16 @@ class Authorization:
 
 
 def is_valid_authority(authority: bytes) -> bool:
-    """EIP-7702 step 4: the recovered authority must not be the zero address.
+    """An authorization is skipped when recovery yields the zero address.
 
     (The delegate-zero rule is a different step: it clears the account's code.)
     """
     return len(authority) == 20 and any(authority)
 
 
-MAX_NONCE = 2**64 - 1
+# EIP-7702 step 2: "Verify the nonce is less than 2**64 - 1." Step 9 increments
+# the nonce, so 2**64 - 1 must be rejected.
+MAX_NONCE = 2**64 - 2
 MAX_CHAIN_ID = 2**256 - 1
 
 
@@ -79,13 +82,14 @@ def validate(authorization: Authorization, *, current_chain_id: int | None = Non
 
     Checks, in spec order:
       * ``chain_id`` is 0 or the current chain id
-      * ``nonce < 2**64`` (EIP-2681)
+      * ``nonce < 2**64 - 1`` (step 2; step 9 increments it)
       * ``s <= secp256k1n / 2`` (EIP-2, referenced by EIP-7702 step 3)
       * ``r`` and ``s`` are in ``(0, n)`` and ``y_parity`` is 0/1
+      * recovery yields a non-zero authority (step 3 skips failures)
 
-    Recovering the authority is intentionally *not* a validity check; the
-    precompile-side recovery accepts high-s (homestead=false), while the
-    authorization tuple rules do not.
+    Recovering the authority is not a *signature* check: ``ecrecover`` itself
+    accepts high-s (homestead=false). The tuple rules are stricter than the
+    precompile, which is why both exist here.
     """
     errors: list[str] = []
 
@@ -106,5 +110,11 @@ def validate(authorization: Authorization, *, current_chain_id: int | None = Non
         errors.append("s out of range")
     elif authorization.s > secp256k1.N // 2:
         errors.append("high-s signature (EIP-2)")
+
+    authority = authorization.authority()
+    if authority is None:
+        errors.append("authority unrecoverable")
+    elif not is_valid_authority(authority):
+        errors.append("authority is the zero address")
 
     return errors

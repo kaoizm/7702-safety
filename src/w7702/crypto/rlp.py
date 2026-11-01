@@ -25,6 +25,8 @@ def encode_bytes(value: bytes) -> bytes:
 
 
 def encode_int(value: int) -> bytes:
+    if isinstance(value, bool):
+        raise TypeError("RLP does not encode booleans; use 0/1 explicitly")
     if value < 0:
         raise ValueError("RLP cannot encode negative integers")
     if value == 0:

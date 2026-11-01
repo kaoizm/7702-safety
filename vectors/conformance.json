@@ -48,8 +48,8 @@
       "nonce": 0,
       "signing_hash": "0xb8902ac278cc12687a3e6d40b87a0f93b564fe7c137d331ecdc1d22cc28f8f4f",
       "y_parity": 0,
-      "r": "0xf7eb5a7530926f4bf8c110759859ca2eedc783c083a4d6bb6cec9a134098c604",
-      "s": "0x3c2e51bee9377fdf5174936127fcc5f8b5b307cf7d303a274be0e2f2684ee2d7",
+      "r": "0x2fdef108fd3ee5ce506a765af5eae7e67234ef7628f24ac9bdea4b05458131a6",
+      "s": "0x6f3f701fa35f6b537687cdbe6aa482c72de1377a03a30362bd8975f9b53008ac",
       "authority": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a"
     },
     {
@@ -343,7 +343,7 @@
         "access_list_length": 0,
         "chain_id": 1,
         "gas_limit": 33500,
-        "nonce": 18446744073709551616
+        "nonce": 18446744073709551615
       },
       "current_chain_id": 1,
       "status": "rejected",

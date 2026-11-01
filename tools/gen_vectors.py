@@ -75,7 +75,9 @@ def build() -> dict:
 
     for chain_id, delegated_to in ((1, DELEGATE_A), (0, DELEGATE_B)):
         unsigned = Authorization(chain_id=chain_id, address=delegated_to, nonce=0)
-        signed = unsigned.sign(KEY_A, nonce=0xFEEDFACE)
+        # Distinct k per tuple: reusing an ECDSA nonce across two digests
+        # reveals the private key.
+        signed = unsigned.sign(KEY_A, k=0xFEEDFACE + chain_id)
         doc["authorization"].append(
             {
                 "chain_id": chain_id,
@@ -192,7 +194,7 @@ def build() -> dict:
         ("repeat_consumes_gas", OPT_OUT_MARKER, good_tx(gas_limit=40000)),
         ("gas_limit_too_low", b"", good_tx(gas_limit=eip8476.OPT_OUT_GAS - 1)),
         ("chain_id_mismatch", b"", good_tx(chain_id=5)),
-        ("nonce_out_of_range", b"", good_tx(nonce=2**64)),
+        ("nonce_out_of_range", b"", good_tx(nonce=2**64 - 1)),
         ("non_empty_authorization_list", b"", good_tx(authorization_list=(b"",))),
         ("destination_not_sender", b"", good_tx(destination=DELEGATE_A)),
         ("nonzero_value", b"", good_tx(value=1)),

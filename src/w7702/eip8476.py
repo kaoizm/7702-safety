@@ -32,7 +32,9 @@ from enum import Enum
 from .markers import OPT_OUT_MARKER, CodeKind, classify, evm_visible_code
 
 OPT_OUT_GAS = 33500
-MAX_NONCE = 2**64 - 1
+# EIP-2681 / EIP-8476: "nonce < 2**64 - 1" (the nonce is incremented after
+# inclusion, so 2**64 - 1 cannot be a valid sender nonce).
+MAX_NONCE = 2**64 - 2
 
 
 class OptOutStatus(str, Enum):

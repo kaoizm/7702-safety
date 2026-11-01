@@ -7,6 +7,10 @@ Only what the 7702 standards need:
 
 No SEC1 encoding, no DER, no BIP32. Kept intentionally small so it can be
 audited alongside the test vectors it produces.
+
+Not constant-time: ``_mul`` is a variable-time double-and-add. This module is
+for producing and checking public test vectors, never for signing with a key
+that protects funds.
 """
 
 from __future__ import annotations
@@ -43,6 +47,8 @@ def _add(p: Point, q: Point) -> Point:
 
 
 def _mul(k: int, point: Point) -> Point:
+    if k < 0:
+        raise ValueError("scalar must be non-negative")
     result: Point = None
     addend = point
     while k:
@@ -65,7 +71,7 @@ def _lift_x(x: int, y_parity: int) -> Point:
 
 
 def public_key(private_key: int) -> Point:
-    if not 0 < private_key < N:
+    if isinstance(private_key, bool) or not 0 < private_key < N:
         raise ValueError("private key out of range")
     return _mul(private_key, G)
 
@@ -113,6 +119,8 @@ def sign(digest: bytes, private_key: int, nonce: int) -> tuple[int, int, int]:
     """
     if len(digest) != 32:
         raise ValueError("digest must be 32 bytes")
+    if isinstance(private_key, bool) or not 0 < private_key < N:
+        raise ValueError("private key out of range")
     if not 0 < nonce < N:
         raise ValueError("nonce out of range")
     r_point = _mul(nonce, G)

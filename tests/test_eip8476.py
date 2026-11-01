@@ -57,11 +57,12 @@ class TestTransactionValidity(unittest.TestCase):
         )
 
     def test_nonce_bounds(self):
+        # EIP-2681: nonce < 2**64 - 1, so 2**64 - 1 is the first invalid value.
         self.assertEqual(
-            eip8476.validate_transaction(valid_tx(nonce=2**64)),
+            eip8476.validate_transaction(valid_tx(nonce=2**64 - 1)),
             RejectReason.NONCE_OUT_OF_RANGE,
         )
-        self.assertIsNone(eip8476.validate_transaction(valid_tx(nonce=2**64 - 1)))
+        self.assertIsNone(eip8476.validate_transaction(valid_tx(nonce=2**64 - 2)))
 
 
 class TestTransition(unittest.TestCase):
