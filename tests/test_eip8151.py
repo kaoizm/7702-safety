@@ -58,19 +58,18 @@ class TestGas(unittest.TestCase):
     def test_failed_recovery_costs_base_only(self):
         db = make_db(b"")
         result = eip8151.ecrecover_precompile(db, DIGEST, V, 0, 0)
-        self.assertEqual(result.gas_used, eip8151.BASE_GAS)
+        self.assertEqual(result.gas_used, 3000)  # spec: base cost
         self.assertEqual(result.output, b"")
 
     def test_cold_then_warm(self):
+        # EIP-8151 states the totals literally: 6100 cold, 3200 warm.
         db = make_db(b"")
         first = eip8151.ecrecover_precompile(db, DIGEST, V, R, S)
-        expected_cold = eip8151.BASE_GAS + eip8151.COLD_ACCOUNT_ACCESS + eip8151.WARM_ACCESS
-        self.assertEqual(first.gas_used, expected_cold)
+        self.assertEqual(first.gas_used, 6100)
         self.assertIn(ADDR, db.accessed_addresses)
 
         second = eip8151.ecrecover_precompile(db, DIGEST, V, R, S)
-        expected_warm = eip8151.BASE_GAS + eip8151.WARM_ACCESS + eip8151.WARM_ACCESS
-        self.assertEqual(second.gas_used, expected_warm)
+        self.assertEqual(second.gas_used, 3200)
 
     def test_rejects_nonstandard_v(self):
         # Verified against mainnet: ecrecover returns empty output for any v

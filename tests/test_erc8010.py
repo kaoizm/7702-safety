@@ -48,9 +48,11 @@ class TestLayouts(unittest.TestCase):
         self.assertEqual(erc8010.MAGIC, b"\x80\x10" * 16)
 
     def test_spec_layouts_conflict(self):
-        # Finding F-1: signer-side and verifier-side layouts disagree.
+        # Finding F-1: the two spec sections disagree. Pin the literals here so
+        # a silent "harmonisation" of the constants cannot hide it.
+        self.assertEqual(erc8010.LAYOUT_SIGNER, ("bytes", "address", "bytes"))
+        self.assertEqual(erc8010.LAYOUT_VERIFIER, ("bytes", "bytes", "address"))
         self.assertTrue(erc8010.layouts_conflict())
-        self.assertNotEqual(erc8010.LAYOUT_SIGNER, erc8010.LAYOUT_VERIFIER)
 
 
 class TestCodec(unittest.TestCase):

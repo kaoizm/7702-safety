@@ -6,7 +6,7 @@ import unittest
 
 from w7702.crypto import rlp, secp256k1
 from w7702.crypto.keccak import keccak256
-from w7702.authorization import Authorization
+from w7702.authorization import Authorization, is_valid_authority, validate
 
 
 class TestKeccak(unittest.TestCase):
@@ -106,6 +106,44 @@ class TestAuthorization(unittest.TestCase):
         signed = auth.sign(key, nonce=0xFEEDFACE)
         self.assertTrue(signed.is_signed)
         self.assertEqual(signed.authority(), secp256k1.address(key))
+
+
+class TestAuthorizationValidation(unittest.TestCase):
+    def _signed(self, **overrides):
+        auth = Authorization(chain_id=1, address=bytes.fromhex("22" * 20), nonce=0)
+        return auth.sign(0xBADCAFE, nonce=0xFEEDFACE)
+
+    def test_valid_tuple_passes(self):
+        self.assertEqual(validate(self._signed()), [])
+
+    def test_chain_id_zero_is_chain_agnostic(self):
+        auth = Authorization(chain_id=0, address=bytes.fromhex("22" * 20), nonce=0)
+        signed = auth.sign(0xBADCAFE, nonce=0xFEEDFACE)
+        self.assertEqual(validate(signed, current_chain_id=5), [])
+
+    def test_chain_id_mismatch(self):
+        self.assertIn("chain_id mismatch", validate(self._signed(), current_chain_id=5))
+
+    def test_nonce_bound(self):
+        auth = Authorization(
+            chain_id=1, address=bytes.fromhex("22" * 20), nonce=2**64)
+        self.assertIn("nonce out of range", validate(auth))
+
+    def test_high_s_rejected(self):
+        signed = self._signed()
+        high_s = Authorization(
+            chain_id=signed.chain_id,
+            address=signed.address,
+            nonce=signed.nonce,
+            y_parity=signed.y_parity ^ 1,
+            r=signed.r,
+            s=secp256k1.N - signed.s,
+        )
+        self.assertIn("high-s signature (EIP-2)", validate(high_s))
+
+    def test_authority_zero_rule(self):
+        self.assertTrue(is_valid_authority(bytes.fromhex("11" * 20)))
+        self.assertFalse(is_valid_authority(bytes(20)))
 
 
 if __name__ == "__main__":

@@ -6,22 +6,26 @@ filed in [02-findings.md](02-findings.md).
 ## 1. Account code states
 
 `raw` = value stored in the state trie. `EVM` = what CALL / EXTCODESIZE /
-EXTCODECOPY / EXTCODEHASH observe after EIP-8476's refinement.
+EXTCODECOPY observe after EIP-8476's refinement. `EXTCODEHASH` hashes that
+EVM-visible code — `keccak256("")` for an opted-out account — while the
+state-trie `codeHash` remains `keccak256(0xef0200)`.
 
 | Raw code | Meaning | EVM sees | `ecrecover` (EIP-8151) | New 7702 authorization | ECDSA tx from sender |
 | --- | --- | --- | --- | --- | --- |
 | `0x` | plain EOA | `0x` | permitted | accepted | valid |
 | `0xef0100 ‖ delegate` | EIP-7702 delegation | raw | permitted | accepted (re-delegates) | valid |
 | `0xef0101 ‖ delegate` | EIP-7851, ECDSA burned | raw | **rejected** | **skipped** | **invalid** |
-| `0xef0200` | EIP-8476 opt-out | `0x` | **rejected** | **skipped** | valid |
+| `0xef0200` | EIP-8476 opt-out | `0x` (code); `keccak256("")` (EXTCODEHASH) | **rejected** | **skipped** | valid |
 | anything else | contract | raw | **rejected** | skipped (not an EOA) | invalid |
 
 Two rows are easy to confuse and matter operationally:
 
 * `0xef0101` burns ECDSA but keeps wallet code in control; `0xef0200` keeps
   ECDSA but forbids delegation. They are **not** interchangeable.
-* `0xef0101` deliberately makes `ecrecover` fail, so `permit`-style approvals
-  stop working. `0xef0200` leaves `permit` intact.
+* Under EIP-8151 **as drafted**, both `0xef0101` and `0xef0200` fail
+  `ecrecover`, so `permit`-style approvals stop working for both. EIP-8476
+  expects EIP-8151 to add an exception for the marker; until it does, the two
+  drafts disagree (F-2).
 
 ## 2. Operation × standard
 
@@ -61,7 +65,7 @@ Two rows are easy to confuse and matter operationally:
 2. `eth_getCode` returns the raw marker; the EVM must not execute it.
 3. `eth_getProof` / `EXTCODEHASH` disagree for opted-out accounts — see F-6.
 
-## 4. Per-chain caveat (the one that burned Binance 14)
+## 4. Per-chain caveat (the pattern behind the 29 Oct 2026 hot-wallet loss)
 
 EIP-7702 authorizations with `chain_id = 0` are valid on every chain where the
 authority's nonce matches. An opt-out is **strictly per chain**. Consequences:
@@ -70,14 +74,15 @@ authority's nonce matches. An opt-out is **strictly per chain**. Consequences:
   transaction and the nonce is still 0;
 * a fleet of hot wallets needs an opt-out transaction **per chain**, each
   requiring gas there;
-* authorization batches can use a nonce range (`history shows 50 tuples spanning
-  18,914,775–18,914,824`) so one tuple matches whatever the live nonce is.
+* authorization batches can use a nonce range — a public chain analysis in the
+  EIP-8476 thread describes one transaction carrying 50 tuples across 50
+  consecutive nonces — so one tuple matches whatever the live nonce is.
 
 ## 5. Open interactions
 
 | Interaction | Status |
 | --- | --- |
-| `0xef0200` applied to an account that already has `0xef0100` | undefined in EIP-8476; suite rejects (F-3) |
+| `0xef0200` applied to an account that already has `0xef0100` | defined: replaced directly (EIP-8476 `f1a4071`); suite applies it |
 | `0xef0101` + `0xef0200` on the same account | cannot coexist (different code lengths) |
 | ERC-8010 signature on an opted-out account | falls to the not-delegated branch; `init_to` call still executes |
 | Native AA (EIP-8141 / 8130 / Tempo) replacing all of the above | tracks open; suite targets 7702-era semantics |

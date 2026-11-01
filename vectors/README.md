@@ -23,22 +23,27 @@ CI enforces this with `git diff --exit-code`.
 }
 ```
 
-All binary values are `0x`-prefixed hex. All integers are JSON numbers unless
-they exceed 2^53, in which case they are `0x` hex strings (`r`, `s`,
-`signing_hash`, `private_key`).
+Byte values are `0x`-prefixed hex, including empty (`"0x"`). Integers are JSON
+numbers when small (`y_parity`, `gas_used`, `chain_id`, `nonce` in
+`eip8476`/`authorization`) and `0x` hex strings for large or signature-sized
+values (`private_key`, `r`, `s`, `digest`, `signing_hash`). A field that does not
+apply is `null` (for example `delegate` for a non-delegated account).
+
+`tests/test_vectors.py` loads this file and recomputes every entry, so the
+schema and the content cannot drift silently.
 
 ## Sections
 
 | Section | Field | Meaning |
 | --- | --- | --- |
 | `keccak256` | `input`, `digest` | hash of an arbitrary byte string |
-| `secp256k1` | `private_key`, `digest`, `nonce`, `r`, `s`, `y_parity`, `signer` | deterministic signature; `recovered` must equal `signer` |
+| `secp256k1` | `private_key`, `digest`, `nonce`, `r`, `s`, `y_parity`, `signer`, `recovered` | deterministic signature; `recovered` must equal `signer` |
 | `authorization` | `chain_id`, `delegate`, `nonce`, `signing_hash`, `r`, `s`, `y_parity`, `authority` | EIP-7702 tuple; `authority` is the recovered EOA |
 | `markers` | `code`, `kind`, `delegate`, `evm_visible_code`, `eip8151_permitted` | code classification |
-| `eip7851` | `input_code`, `delegate`, `success`, `new_code`, `gas_used`, `reason` | `SETSELFDELEGATE` transition |
-| `eip8151` | `account_code`, `v`, `r`, `s`, `output`, `permitted`, `gas_cold`, `gas_warm` | precompile result, first and second call |
-| `eip8476` | `case`, `status`, `reason`, `new_code`, `gas_used` | opt-out form and transition |
-| `erc8010` | `layout`, `wrapped`, `signature`, `init_to`, `init_data`, `delegated` | wrapped-signature codec |
+| `eip7851` | `label`, `input_code`, `delegate`, `success`, `new_code`, `gas_used`, `reason` | `SETSELFDELEGATE` transition |
+| `eip8151` | `signer`, `digest`, `account_code`, `v`, `r`, `s`, `output`, `permitted`, `gas_cold`, `gas_warm` | precompile result, first and second call |
+| `eip8476` | `case`, `input_code`, `tx`, `current_chain_id`, `status`, `reason`, `new_code`, `gas_used`, `already_marked` | opt-out transaction validity and transition |
+| `erc8010` | `layout`, `wrapped`, `signature`, `init_to`, `init_data`, `delegated`, `layouts_conflict` | wrapped-signature codec |
 
 ## Consumption
 

@@ -25,9 +25,12 @@ Verifier side:
 ```
 
 Both the **order** (`init_to`/`init_data`) and the **ABI types**
-(`(bytes,address,bytes)` vs `(bytes,bytes,address)`) differ. A signature
-produced by any conforming signer cannot be parsed by a conforming verifier: the
-address word is read as a dynamic offset and decoding reverts.
+(`(bytes,address,bytes)` vs `(bytes,bytes,address)`) differ. A signature produced
+by a conforming signer cannot be parsed by a conforming verifier: depending on
+`init_to`, decoding either reverts or — worse — silently mis-parses. For the
+spec-permitted `init_to = 0`, the zero word is read as dynamic offset 0, so the
+authorization bytes come back as `init_data` and verification proceeds against
+garbage instead of failing loudly.
 
 **Impact:** implementers will interoperate incorrectly, silently, per-wallet.
 This is exactly the class of bug that makes a signature-verification standard
@@ -116,5 +119,8 @@ No action for this suite beyond keeping the visibility model tested
 ## F-7 — No test vectors existed for any of the four drafts (the reason for this repo)
 
 `EIP-7851`: none. `EIP-8151`: reference implementation, no vectors.
-`EIP-8476`: none. `ERC-8010`: "Test Cases: TBD". This repository is the gap
-filler; `vectors/conformance.json` is the first portable artifact.
+`EIP-8476` at `f1a4071` now has a 27-row Test Cases table (it did not at first
+draft); the vectors here are being reconciled against it. Its repeat-opt-out row
+is exactly what exposed the wrong gas in this repo's first EIP-8476 model.
+`ERC-8010`: "Test Cases: TBD". `vectors/conformance.json` remains the first
+portable, machine-checked artifact, and `tests/test_vectors.py` replays it.

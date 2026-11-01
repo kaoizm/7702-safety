@@ -63,6 +63,48 @@ class Authorization:
 
 
 def is_valid_authority(authority: bytes) -> bool:
-    """EIP-7702: an authorization is skipped if authority is zero or the
-    delegate address (self-delegation to itself is a no-op)."""
+    """EIP-7702 step 4: the recovered authority must not be the zero address.
+
+    (The delegate-zero rule is a different step: it clears the account's code.)
+    """
     return len(authority) == 20 and any(authority)
+
+
+MAX_NONCE = 2**64 - 1
+MAX_CHAIN_ID = 2**256 - 1
+
+
+def validate(authorization: Authorization, *, current_chain_id: int | None = None) -> list[str]:
+    """Return the EIP-7702 validity checks this tuple fails (empty = valid).
+
+    Checks, in spec order:
+      * ``chain_id`` is 0 or the current chain id
+      * ``nonce < 2**64`` (EIP-2681)
+      * ``s <= secp256k1n / 2`` (EIP-2, referenced by EIP-7702 step 3)
+      * ``r`` and ``s`` are in ``(0, n)`` and ``y_parity`` is 0/1
+
+    Recovering the authority is intentionally *not* a validity check; the
+    precompile-side recovery accepts high-s (homestead=false), while the
+    authorization tuple rules do not.
+    """
+    errors: list[str] = []
+
+    if not 0 <= authorization.chain_id <= MAX_CHAIN_ID:
+        errors.append("chain_id out of range")
+    elif current_chain_id is not None and authorization.chain_id not in (0, current_chain_id):
+        errors.append("chain_id mismatch")
+
+    if not 0 <= authorization.nonce <= MAX_NONCE:
+        errors.append("nonce out of range")
+
+    if authorization.y_parity not in (0, 1):
+        errors.append("y_parity must be 0 or 1")
+
+    if not 0 < authorization.r < secp256k1.N:
+        errors.append("r out of range")
+    if not 0 < authorization.s < secp256k1.N:
+        errors.append("s out of range")
+    elif authorization.s > secp256k1.N // 2:
+        errors.append("high-s signature (EIP-2)")
+
+    return errors

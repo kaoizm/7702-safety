@@ -43,10 +43,14 @@ class TestSelfDelegate(unittest.TestCase):
             eip7851.apply_self_delegate(DELEGATION_PREFIX + A, B, is_static=True)
 
     def test_irreversible(self):
+        # Assert the exact bytes, not the model's own classifier.
         code = DELEGATION_PREFIX + A
         for delegate in (B, A, bytes.fromhex("cc" * 20)):
-            code = eip7851.apply_self_delegate(code, delegate).new_code
-            self.assertIs(eip7851.classify(code), eip7851.CodeKind.ECDSA_DISABLED)
+            step = eip7851.apply_self_delegate(code, delegate)
+            self.assertTrue(step.success)
+            self.assertEqual(step.new_code, ECDSA_DISABLED_PREFIX + delegate)
+            self.assertNotEqual(step.new_code[:3], DELEGATION_PREFIX)
+            code = step.new_code
 
 
 class TestValidation(unittest.TestCase):

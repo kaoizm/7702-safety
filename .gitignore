@@ -11,3 +11,6 @@ cache/
 tools/gh/
 tools/gh.zip
 .ghconfig/
+dist/
+build/
+*.egg-info/

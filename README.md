@@ -4,10 +4,11 @@
 
 **An executable conformance suite for the EIP-7702 security standards.**
 
-The 29 October 2026 Binance incident was not a cryptographic break. A signing path
-that could not answer *"should this transaction be signed?"* accepted an
-EIP-7702 authorization tuple, and one valid signature turned a hot wallet into an
-attacker-controlled contract for 3h45m.
+The 29 October 2026 hot-wallet incident was not a cryptographic break. A signing
+path that could not answer *"should this transaction be signed?"* accepted an
+EIP-7702 authorization tuple, and one valid signature turned the hot wallet into
+an attacker-controlled contract. Public chain analysis in the EIP-8476 thread
+describes the sequence; Binance has not published a root cause.
 
 Four standards exist today to close that gap:
 
@@ -15,12 +16,13 @@ Four standards exist today to close that gap:
 | --- | --- | --- |
 | [EIP-7851](https://eips.ethereum.org/EIPS/eip-7851) | Code-controlled delegation (`0xef0101`), permanent ECDSA burn | opcode TBD, no tests |
 | [EIP-8151](https://eips.ethereum.org/EIPS/eip-8151) | Account-code restricted `ecRecover` | no tests |
-| [EIP-8476](https://ethereum-magicians.org/t/eip-8476-permanent-eoa-delegation-opt-out/30134) | Permanent opt-out marker (`0xef0200`) | no reference implementation, no tests |
-| [ERC-8010](https://github.com/ethereum/ERCs/pull/12600) | Pre-delegation signature verification | *Test Cases: TBD*, *Security Considerations: TBD* |
+| [EIP-8476](https://ethereum-magicians.org/t/eip-8476-permanent-eoa-delegation-opt-out/30134) | Permanent opt-out marker (`0xef0200`) | no reference implementation; draft has a 27-row Test Cases table |
+| [ERC-8010](https://github.com/ethereum/ERCs/pull/1186) | Pre-delegation signature verification | *Test Cases: TBD*, *Security Considerations: TBD* |
 
-This repository is the missing verification layer: **portable JSON test vectors, a
-dependency-free executable reference, and a compatibility matrix** that any client
-team, wallet, or auditor can run.
+This repository is an independent verification layer: **portable JSON test
+vectors, a dependency-free executable reference, and a compatibility matrix**
+that any client team, wallet, or auditor can run. The vectors are replayed by
+`tests/test_vectors.py`, so they cannot silently drift from the models.
 
 ## Quick start
 
@@ -62,7 +64,7 @@ docs/                   Compatibility matrix, findings, roadmap
 ## Findings so far
 
 Seven specification issues are documented in
-[docs/02-findings.md](docs/02-findings.md). Two are still open:
+[docs/02-findings.md](docs/02-findings.md). F-1 and F-2 are open:
 
 - **F-1** — ERC-8010's signer-side and verifier-side context layouts disagree on
   both field order and ABI types; a conforming signer cannot be parsed by a
