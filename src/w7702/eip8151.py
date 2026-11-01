@@ -3,7 +3,7 @@
 Models the modified ``ecRecover`` precompile at ``0x00...01``:
 
   1. charge 3000 gas
-  2. recover; on failure return empty output, stop
+  2. recover; on failure return empty output, stop (``v`` must be 27 or 28)
   3. charge (COLD_ACCOUNT_ACCESS | WARM_ACCESS) + one WARM_ACCESS for the read
   4. warm the recovered address, record the read, load *raw* code
   5. return the 32-byte address only if raw code is empty or exactly
@@ -69,15 +69,13 @@ def ecrecover_precompile(
     if gas_limit is not None and gas_used > gas_limit:
         raise OutOfGas("base gas")
 
-    # The precompile takes the classic 27/28 encoding; the library uses 0/1.
-    if v in (27, 28):
-        y_parity = v - 27
-    elif v in (0, 1):
-        y_parity = v
-    else:
+    # The precompile takes the classic 27/28 encoding. Any other value,
+    # including the 0/1 parity encoding used by some signing libraries, is a
+    # recovery failure: verified against mainnet (v=0 returns empty output).
+    if v not in (27, 28):
         return ECRecoverResult(b"", gas_used, None, False)
 
-    payload = secp256k1.recover(digest, y_parity, r, s)
+    payload = secp256k1.recover(digest, v - 27, r, s)
     if payload is None:
         return ECRecoverResult(b"", gas_used, None, False)
 

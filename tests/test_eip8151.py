@@ -72,6 +72,16 @@ class TestGas(unittest.TestCase):
         expected_warm = eip8151.BASE_GAS + eip8151.WARM_ACCESS + eip8151.WARM_ACCESS
         self.assertEqual(second.gas_used, expected_warm)
 
+    def test_rejects_nonstandard_v(self):
+        # Verified against mainnet: ecrecover returns empty output for any v
+        # other than 27/28, including the 0/1 parity encoding.
+        db = make_db(b"")
+        for v in (0, 1, 26, 29, 255):
+            result = eip8151.ecrecover_precompile(db, DIGEST, v, R, S)
+            self.assertFalse(result.permitted, msg=f"v={v}")
+            self.assertEqual(result.output, b"")
+            self.assertEqual(result.gas_used, eip8151.BASE_GAS)
+
     def test_out_of_gas_at_base(self):
         db = make_db(b"")
         with self.assertRaises(eip8151.OutOfGas):
