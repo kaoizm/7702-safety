@@ -2,35 +2,41 @@
 
 Model of the opt-out form (type-4 set-code transaction, empty authorization
 list, destination == sender, value 0, empty data and access list) and the
-resulting account semantics:
+resulting account semantics.
 
-  * sender's raw code becomes the 3-byte marker ``0xef0200``
-  * fixed 33500 gas, no EVM code executes
-  * the marker can never be replaced or cleared by a later authorization
+Normative points modelled here (draft head f1a4071, 2026-11-01):
+
+  * opt-out sets the sender's raw code to the 3-byte marker ``0xef0200``
+  * intrinsic gas and gas used MUST both equal ``OPT_OUT_GAS`` (33500); a gas
+    limit below that MUST make the transaction invalid
+  * the outer transaction chain ID MUST equal the current chain ID; the
+    ``chain_id = 0`` exception for EIP-7702 authorization tuples does not apply
+  * the sender nonce MUST satisfy ``nonce < 2**64`` (EIP-2681)
+  * an existing EIP-7702 delegation is replaced directly
+  * repeating the operation on an already marked account is valid, leaves code
+    unchanged, and consumes the ordinary nonce and ``OPT_OUT_GAS``
+    (Test Cases row: code M, gas limit 40000 -> gas used 33500, unused 6500)
   * EIP-7702 authorizations for a marked authority are skipped
   * EVM execution/inspection sees empty code; ``eth_getCode``/``eth_getProof``
     expose the raw marker
-  * transaction pools treat the account as an empty-code EOA for pending-tx limits
-  * the guarantee is per chain: a chain_id = 0 authorization is still valid on
-    every other 7702 chain where the account has not opted out
-
-Open questions are recorded in ``docs/02-findings.md`` rather than silently
-guessed; each is surfaced as a distinct rejection reason.
+  * transaction pools treat the account as an empty-code EOA for pending-tx
+    limits
+  * the guarantee is per chain
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 from .markers import OPT_OUT_MARKER, CodeKind, classify, evm_visible_code
 
 OPT_OUT_GAS = 33500
+MAX_NONCE = 2**64 - 1
 
 
 class OptOutStatus(str, Enum):
     APPLIED = "applied"
-    ALREADY_OPTED_OUT = "already_opted_out"
     REJECTED = "rejected"
 
 
@@ -40,6 +46,9 @@ class RejectReason(str, Enum):
     NONZERO_VALUE = "nonzero_value"
     NON_EMPTY_DATA = "non_empty_data"
     NON_EMPTY_ACCESS_LIST = "non_empty_access_list"
+    CHAIN_ID_MISMATCH = "chain_id_mismatch"
+    GAS_LIMIT_TOO_LOW = "gas_limit_too_low"
+    NONCE_OUT_OF_RANGE = "nonce_out_of_range"
     ACCOUNT_HAS_CODE = "account_has_code"
     ECDSA_DISABLED_SENDER = "ecdsa_disabled_sender"
 
@@ -52,6 +61,9 @@ class SetCodeTransaction:
     data: bytes = b""
     access_list: tuple = ()
     authorization_list: tuple = ()
+    chain_id: int = 0
+    gas_limit: int = OPT_OUT_GAS
+    nonce: int = 0
 
 
 @dataclass(frozen=True)
@@ -60,6 +72,7 @@ class OptOutResult:
     gas_used: int
     new_code: bytes
     reason: RejectReason | None = None
+    already_marked: bool = False
 
 
 def validate_form(tx: SetCodeTransaction) -> RejectReason | None:
@@ -76,23 +89,45 @@ def validate_form(tx: SetCodeTransaction) -> RejectReason | None:
     return None
 
 
-def apply_opt_out(raw_code: bytes, tx: SetCodeTransaction) -> OptOutResult:
+def validate_transaction(
+    tx: SetCodeTransaction, current_chain_id: int | None = None
+) -> RejectReason | None:
+    """Form plus the transaction-validity rules the draft states."""
     reason = validate_form(tx)
+    if reason is not None:
+        return reason
+    if current_chain_id is not None and tx.chain_id != current_chain_id:
+        return RejectReason.CHAIN_ID_MISMATCH
+    if tx.gas_limit < OPT_OUT_GAS:
+        return RejectReason.GAS_LIMIT_TOO_LOW
+    if not 0 <= tx.nonce <= MAX_NONCE:
+        return RejectReason.NONCE_OUT_OF_RANGE
+    return None
+
+
+def apply_opt_out(
+    raw_code: bytes,
+    tx: SetCodeTransaction,
+    *,
+    current_chain_id: int | None = None,
+) -> OptOutResult:
+    reason = validate_transaction(tx, current_chain_id)
     if reason is not None:
         return OptOutResult(OptOutStatus.REJECTED, 0, raw_code, reason)
 
     kind = classify(raw_code)
     if kind is CodeKind.OPT_OUT:
-        return OptOutResult(OptOutStatus.ALREADY_OPTED_OUT, 0, raw_code)
+        # Repeat: valid, code unchanged, ordinary nonce and OPT_OUT_GAS.
+        return OptOutResult(
+            OptOutStatus.APPLIED, OPT_OUT_GAS, raw_code, already_marked=True
+        )
     if kind in (CodeKind.EMPTY, CodeKind.DELEGATION):
-        # EIP-8476 (rev. 2026-11-01): "An existing EIP-7702 delegation is
-        # replaced directly; no preliminary clearing transaction is required."
         return OptOutResult(OptOutStatus.APPLIED, OPT_OUT_GAS, OPT_OUT_MARKER)
     if kind is CodeKind.ECDSA_DISABLED:
-        # Unreachable in practice: EIP-7851 makes any ECDSA-authenticated
-        # transaction from a 0xef0101 sender invalid, so such an account cannot
-        # originate the opt-out transaction. Rejected explicitly because
-        # 0xef0200 is ECDSA-enabled state and would otherwise undo 0xef0101.
+        # Unreachable in practice: EIP-7851 makes ECDSA transactions from a
+        # 0xef0101 sender invalid, so such an account cannot originate this
+        # transaction. Rejected explicitly because 0xef0200 is ECDSA-enabled
+        # state and would otherwise undo 0xef0101.
         return OptOutResult(
             OptOutStatus.REJECTED, 0, raw_code, RejectReason.ECDSA_DISABLED_SENDER
         )
@@ -102,7 +137,11 @@ def apply_opt_out(raw_code: bytes, tx: SetCodeTransaction) -> OptOutResult:
 
 
 def authorization_eligible(authority_raw_code: bytes) -> bool:
-    """EIP-7702 authorizations for an opted-out authority are skipped."""
+    """EIP-7702 authorizations for an opted-out authority are skipped.
+
+    Scoped to the opt-out rule only; full EIP-7702 eligibility also requires
+    empty code or a delegation indicator.
+    """
     return classify(authority_raw_code) is not CodeKind.OPT_OUT
 
 

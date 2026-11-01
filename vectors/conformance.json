@@ -144,6 +144,8 @@
   ],
   "eip8151": [
     {
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
       "account_code": "0x",
       "v": 27,
       "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
@@ -154,6 +156,8 @@
       "gas_warm": 3200
     },
     {
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
       "account_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "v": 27,
       "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
@@ -164,6 +168,8 @@
       "gas_warm": 3200
     },
     {
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
       "account_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "v": 27,
       "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
@@ -174,6 +180,8 @@
       "gas_warm": 3200
     },
     {
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
       "account_code": "0xef0200",
       "v": 27,
       "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
@@ -184,6 +192,8 @@
       "gas_warm": 3200
     },
     {
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
       "account_code": "0x60006000f3",
       "v": 27,
       "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
@@ -197,54 +207,255 @@
   "eip8476": [
     {
       "case": "apply_to_plain_eoa",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "applied",
+      "reason": null,
       "new_code": "0xef0200",
       "gas_used": 33500,
-      "authorization_eligible_after": false,
-      "evm_visible_code_after": "0x",
-      "rpc_code_after": "0xef0200"
+      "already_marked": false
     },
     {
       "case": "apply_over_existing_delegation",
+      "input_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "applied",
+      "reason": null,
       "new_code": "0xef0200",
-      "gas_used": 33500
+      "gas_used": 33500,
+      "already_marked": false
     },
     {
       "case": "apply_over_ecdsa_disabled",
+      "input_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "rejected",
       "reason": "ecdsa_disabled_sender",
-      "new_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "new_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "gas_used": 0,
+      "already_marked": false
+    },
+    {
+      "case": "repeat_consumes_gas",
+      "input_code": "0xef0200",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 40000,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
+      "status": "applied",
+      "reason": null,
+      "new_code": "0xef0200",
+      "gas_used": 33500,
+      "already_marked": true
+    },
+    {
+      "case": "gas_limit_too_low",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33499,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
+      "status": "rejected",
+      "reason": "gas_limit_too_low",
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
+    },
+    {
+      "case": "chain_id_mismatch",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 5,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
+      "status": "rejected",
+      "reason": "chain_id_mismatch",
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
+    },
+    {
+      "case": "nonce_out_of_range",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 18446744073709551616
+      },
+      "current_chain_id": 1,
+      "status": "rejected",
+      "reason": "nonce_out_of_range",
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
     },
     {
       "case": "non_empty_authorization_list",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 1,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "rejected",
       "reason": "non_empty_authorization_list",
-      "new_code": "0x"
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
     },
     {
       "case": "destination_not_sender",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "rejected",
       "reason": "destination_not_sender",
-      "new_code": "0x"
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
     },
     {
       "case": "nonzero_value",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 1,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "rejected",
       "reason": "nonzero_value",
-      "new_code": "0x"
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
     },
     {
       "case": "non_empty_data",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x01",
+        "authorization_list_length": 0,
+        "access_list_length": 0,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "rejected",
       "reason": "non_empty_data",
-      "new_code": "0x"
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
     },
     {
       "case": "non_empty_access_list",
+      "input_code": "0x",
+      "tx": {
+        "sender": "0x2828282828282828282828282828282828282828",
+        "destination": "0x2828282828282828282828282828282828282828",
+        "value": 0,
+        "data": "0x",
+        "authorization_list_length": 0,
+        "access_list_length": 1,
+        "chain_id": 1,
+        "gas_limit": 33500,
+        "nonce": 0
+      },
+      "current_chain_id": 1,
       "status": "rejected",
       "reason": "non_empty_access_list",
-      "new_code": "0x"
+      "new_code": "0x",
+      "gas_used": 0,
+      "already_marked": false
     }
   ],
   "erc8010": [

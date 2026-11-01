@@ -149,6 +149,8 @@ def build() -> dict:
         warm = eip8151.ecrecover_precompile(db, DIGEST, v, r, s)
         doc["eip8151"].append(
             {
+                "signer": hx(signer),
+                "digest": hx(DIGEST),
                 "account_code": hx(code),
                 "v": v,
                 "r": hex(r),
@@ -161,59 +163,55 @@ def build() -> dict:
         )
 
     sender = bytes.fromhex("28" * 20)
-    good = SetCodeTransaction(sender=sender, destination=sender)
-    bad_forms = {
-        "non_empty_authorization_list": SetCodeTransaction(
-            sender=sender, destination=sender, authorization_list=(b"",)),
-        "destination_not_sender": SetCodeTransaction(
-            sender=sender, destination=DELEGATE_A),
-        "nonzero_value": SetCodeTransaction(
-            sender=sender, destination=sender, value=1),
-        "non_empty_data": SetCodeTransaction(
-            sender=sender, destination=sender, data=b"\x01"),
-        "non_empty_access_list": SetCodeTransaction(
-            sender=sender, destination=sender, access_list=((1,),)),
-    }
-    result = eip8476.apply_opt_out(b"", good)
-    doc["eip8476"].append(
-        {
-            "case": "apply_to_plain_eoa",
-            "status": result.status.value,
-            "new_code": hx(result.new_code),
-            "gas_used": result.gas_used,
-            "authorization_eligible_after": eip8476.authorization_eligible(result.new_code),
-            "evm_visible_code_after": hx(eip8476.execution_code(result.new_code)),
-            "rpc_code_after": hx(eip8476.raw_code_for_rpc(result.new_code)),
+    current_chain = 1
+
+    def tx_json(tx: SetCodeTransaction) -> dict:
+        return {
+            "sender": hx(tx.sender),
+            "destination": hx(tx.destination),
+            "value": tx.value,
+            "data": hx(tx.data),
+            "authorization_list_length": len(tx.authorization_list),
+            "access_list_length": len(tx.access_list),
+            "chain_id": tx.chain_id,
+            "gas_limit": tx.gas_limit,
+            "nonce": tx.nonce,
         }
-    )
-    over_delegation = eip8476.apply_opt_out(
-        DELEGATION_PREFIX + DELEGATE_A, good)
-    doc["eip8476"].append(
-        {
-            "case": "apply_over_existing_delegation",
-            "status": over_delegation.status.value,
-            "new_code": hx(over_delegation.new_code),
-            "gas_used": over_delegation.gas_used,
-        }
-    )
-    over_disabled = eip8476.apply_opt_out(
-        ECDSA_DISABLED_PREFIX + DELEGATE_A, good)
-    doc["eip8476"].append(
-        {
-            "case": "apply_over_ecdsa_disabled",
-            "status": over_disabled.status.value,
-            "reason": over_disabled.reason.value if over_disabled.reason else None,
-            "new_code": hx(over_disabled.new_code),
-        }
-    )
-    for name, tx in bad_forms.items():
-        rejected = eip8476.apply_opt_out(b"", tx)
+
+    def good_tx(**overrides) -> SetCodeTransaction:
+        fields = dict(sender=sender, destination=sender, chain_id=current_chain)
+        fields.update(overrides)
+        return SetCodeTransaction(**fields)
+
+    opt_cases = [
+        ("apply_to_plain_eoa", b"", good_tx()),
+        ("apply_over_existing_delegation", DELEGATION_PREFIX + DELEGATE_A,
+         good_tx()),
+        ("apply_over_ecdsa_disabled", ECDSA_DISABLED_PREFIX + DELEGATE_A,
+         good_tx()),
+        ("repeat_consumes_gas", OPT_OUT_MARKER, good_tx(gas_limit=40000)),
+        ("gas_limit_too_low", b"", good_tx(gas_limit=eip8476.OPT_OUT_GAS - 1)),
+        ("chain_id_mismatch", b"", good_tx(chain_id=5)),
+        ("nonce_out_of_range", b"", good_tx(nonce=2**64)),
+        ("non_empty_authorization_list", b"", good_tx(authorization_list=(b"",))),
+        ("destination_not_sender", b"", good_tx(destination=DELEGATE_A)),
+        ("nonzero_value", b"", good_tx(value=1)),
+        ("non_empty_data", b"", good_tx(data=b"\x01")),
+        ("non_empty_access_list", b"", good_tx(access_list=((1,),))),
+    ]
+    for name, code, tx in opt_cases:
+        outcome = eip8476.apply_opt_out(code, tx, current_chain_id=current_chain)
         doc["eip8476"].append(
             {
                 "case": name,
-                "status": rejected.status.value,
-                "reason": rejected.reason.value if rejected.reason else None,
-                "new_code": hx(rejected.new_code),
+                "input_code": hx(code),
+                "tx": tx_json(tx),
+                "current_chain_id": current_chain,
+                "status": outcome.status.value,
+                "reason": outcome.reason.value if outcome.reason else None,
+                "new_code": hx(outcome.new_code),
+                "gas_used": outcome.gas_used,
+                "already_marked": outcome.already_marked,
             }
         )
 
