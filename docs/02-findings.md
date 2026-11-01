@@ -83,8 +83,10 @@ retain `ecrecover`-based flows such as ERC-2612 `permit`. The predicate change
 is proposed in **ethereum/EIPs#12605**. The EIP-8476 author reviewed that change
 and confirmed it matches the intended semantics (permanent opt-out without
 revoking ordinary EOA ECDSA authorization); it now awaits review from the
-EIP-8151 authors. Both the current (rejecting) and proposed (accepting)
-behaviours are modelled here and shipped as vectors.
+EIP-8151 authors. EIP-8476 commit `44c146e` references the proposed EIP-8151
+update and adds the combined `ecrecover` cases to its Test Cases section. Both
+the current (rejecting) and proposed (accepting) behaviours are modelled here and
+shipped as vectors.
 
 ## F-3 — EIP-8476 over an existing delegation (RESOLVED upstream)
 
