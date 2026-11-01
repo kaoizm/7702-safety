@@ -41,6 +41,10 @@ There is no `pip install`. There is no `pytest`. There is no `package.json`.
    addresses and published test keys only.
 8. **Findings are constructive.** When a spec is ambiguous, the tone is
    "which did you mean, here are vectors for both", never "you are wrong".
+9. **Documentation layers move together.** A behavioural change updates, in the
+   same commit: the module docstring, the function docstring,
+   `docs/01-compatibility-matrix.md`, and the vectors. A new flag or code state
+   must be described at every layer that still states the old behaviour.
 
 ## Layout
 
@@ -70,4 +74,6 @@ docs/               compatibility matrix, findings, roadmap, threat model
 - [ ] every new rule cites an EIP section
 - [ ] no new dependency, no network, no randomness
 - [ ] public functions have type hints and a one-line docstring
+- [ ] any new flag or code state is described in the module docstring, the
+      function docstring, the compatibility matrix and the vectors
 - [ ] findings reference a test that reproduces them

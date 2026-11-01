@@ -35,8 +35,9 @@ vectors).
    - expose the other reading as a distinct rejection reason,
    - add `F-N` to `docs/02-findings.md` with both quotes,
    - add a test named `test_spec_ambiguity_*`.
-7. **Update the matrix.** `docs/01-compatibility-matrix.md` gets a row for any
-   new code state or operation.
+7. **Update every layer.** `docs/01-compatibility-matrix.md`, the module
+   docstring, the function docstring and `vectors/` all state behaviour. A new
+   flag or code state must be described in all of them, in the same change.
 
 ## Anti-patterns
 
