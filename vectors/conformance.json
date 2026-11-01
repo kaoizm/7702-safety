@@ -1,0 +1,249 @@
+{
+  "meta": {
+    "suite": "7702-safety",
+    "version": "0.1.0",
+    "format": "conformance-vectors/v1",
+    "generated_by": "tools/gen_vectors.py"
+  },
+  "keccak256": [
+    {
+      "input": "0x",
+      "digest": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+    },
+    {
+      "input": "0x616263",
+      "digest": "0x4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45"
+    },
+    {
+      "input": "0x54686520717569636b2062726f776e20666f78206a756d7073206f76657220746865206c617a7920646f67",
+      "digest": "0x4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15"
+    }
+  ],
+  "secp256k1": [
+    {
+      "private_key": "0x1111111111111111111111111111111111111111111111111111111111111111",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
+      "nonce": "0xc0ffee",
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "y_parity": 0,
+      "signer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "recovered": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a"
+    },
+    {
+      "private_key": "0x2222222222222222222222222222222222222222222222222222222222222222",
+      "digest": "0xd5747571a844a42589f73e123aa04c5b80449761589a1b8b6e62a324732bbb74",
+      "nonce": "0xdeadbeef",
+      "r": "0x76d2fdf1302d1fa9556f4df94ec84cefba6d482e54f47c6c2a238c1baa560f0e",
+      "s": "0x69059bd43303f086403a6f6b27b501684a29d34ce245abcbb495cb28fa3d1509",
+      "y_parity": 0,
+      "signer": "0x1563915e194d8cfba1943570603f7606a3115508",
+      "recovered": "0x1563915e194d8cfba1943570603f7606a3115508"
+    }
+  ],
+  "authorization": [
+    {
+      "chain_id": 1,
+      "delegate": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "nonce": 0,
+      "signing_hash": "0xb8902ac278cc12687a3e6d40b87a0f93b564fe7c137d331ecdc1d22cc28f8f4f",
+      "y_parity": 0,
+      "r": "0xf7eb5a7530926f4bf8c110759859ca2eedc783c083a4d6bb6cec9a134098c604",
+      "s": "0x3c2e51bee9377fdf5174936127fcc5f8b5b307cf7d303a274be0e2f2684ee2d7",
+      "authority": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a"
+    },
+    {
+      "chain_id": 0,
+      "delegate": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "nonce": 0,
+      "signing_hash": "0x4ce8ee25eb2fa14bd69f730021a43556856674925940ecf0a6872939795acca3",
+      "y_parity": 0,
+      "r": "0xf7eb5a7530926f4bf8c110759859ca2eedc783c083a4d6bb6cec9a134098c604",
+      "s": "0x6e2c1a8b20a0c6e8accef7a06bb1136077619731b8b9c52f8e9edd4139045d69",
+      "authority": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a"
+    }
+  ],
+  "markers": [
+    {
+      "name": "empty",
+      "code": "0x",
+      "kind": "empty",
+      "delegate": null,
+      "evm_visible_code": "0x",
+      "eip8151_permitted": true
+    },
+    {
+      "name": "delegation",
+      "code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "delegation",
+      "delegate": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "evm_visible_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "eip8151_permitted": true
+    },
+    {
+      "name": "ecdsa_disabled",
+      "code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "ecdsa_disabled",
+      "delegate": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "evm_visible_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "eip8151_permitted": false
+    },
+    {
+      "name": "opt_out",
+      "code": "0xef0200",
+      "kind": "opt_out",
+      "delegate": null,
+      "evm_visible_code": "0x",
+      "eip8151_permitted": false
+    },
+    {
+      "name": "contract",
+      "code": "0x60006000f3",
+      "kind": "other",
+      "delegate": null,
+      "evm_visible_code": "0x60006000f3",
+      "eip8151_permitted": false
+    },
+    {
+      "name": "delegation_with_trailing_byte",
+      "code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00",
+      "kind": "other",
+      "delegate": null,
+      "evm_visible_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00",
+      "eip8151_permitted": false
+    }
+  ],
+  "eip7851": [
+    {
+      "label": "zero_delegate",
+      "input_code": "0x",
+      "delegate": "0x0000000000000000000000000000000000000000",
+      "success": false,
+      "new_code": "0x",
+      "gas_used": 9500,
+      "reason": "zero_delegate"
+    },
+    {
+      "label": "update",
+      "input_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "delegate": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "success": true,
+      "new_code": "0xef0101bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "gas_used": 9500,
+      "reason": "delegation_updated"
+    },
+    {
+      "label": "redelegate",
+      "input_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "delegate": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "success": true,
+      "new_code": "0xef0101bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "gas_used": 9500,
+      "reason": "delegation_updated"
+    }
+  ],
+  "eip8151": [
+    {
+      "account_code": "0x",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x00000000000000000000000019e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "permitted": true,
+      "gas_cold": 6100,
+      "gas_warm": 3200
+    },
+    {
+      "account_code": "0xef0100aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x00000000000000000000000019e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "permitted": true,
+      "gas_cold": 6100,
+      "gas_warm": 3200
+    },
+    {
+      "account_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x",
+      "permitted": false,
+      "gas_cold": 6100,
+      "gas_warm": 3200
+    },
+    {
+      "account_code": "0xef0200",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x",
+      "permitted": false,
+      "gas_cold": 6100,
+      "gas_warm": 3200
+    },
+    {
+      "account_code": "0x60006000f3",
+      "v": 27,
+      "r": "0x2a5bbcb0eede528e6abe5f2ec50ad7887eb5677af383a460b05ee23bf892dfe5",
+      "s": "0x3e0887ea7c29827773f91f99e8e59f91349e01d451b88013112bf7ee151d7633",
+      "output": "0x",
+      "permitted": false,
+      "gas_cold": 6100,
+      "gas_warm": 3200
+    }
+  ],
+  "eip8476": [
+    {
+      "case": "apply_to_plain_eoa",
+      "status": "applied",
+      "new_code": "0xef0200",
+      "gas_used": 33500,
+      "authorization_eligible_after": false,
+      "evm_visible_code_after": "0x",
+      "rpc_code_after": "0xef0200"
+    },
+    {
+      "case": "non_empty_authorization_list",
+      "status": "rejected",
+      "reason": "non_empty_authorization_list",
+      "new_code": "0x"
+    },
+    {
+      "case": "destination_not_sender",
+      "status": "rejected",
+      "reason": "destination_not_sender",
+      "new_code": "0x"
+    },
+    {
+      "case": "nonzero_value",
+      "status": "rejected",
+      "reason": "nonzero_value",
+      "new_code": "0x"
+    },
+    {
+      "case": "non_empty_data",
+      "status": "rejected",
+      "reason": "non_empty_data",
+      "new_code": "0x"
+    },
+    {
+      "case": "non_empty_access_list",
+      "status": "rejected",
+      "reason": "non_empty_access_list",
+      "new_code": "0x"
+    }
+  ],
+  "erc8010": [
+    {
+      "layout": "signer",
+      "wrapped": "0x01020000000000000000000000000000000000000000000000000000000000000060000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001808010801080108010801080108010801080108010801080108010801080108010",
+      "signature": "0x0102",
+      "init_to": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "init_data": "0x03",
+      "delegated": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "layouts_conflict": true
+    }
+  ]
+}
