@@ -64,21 +64,24 @@ docs/                   Compatibility matrix, findings, roadmap
 ## Findings so far
 
 Seven specification issues are documented in
-[docs/02-findings.md](docs/02-findings.md). F-1 and F-2 are open:
+[docs/02-findings.md](docs/02-findings.md). Current status:
 
-- **F-1** — ERC-8010's signer-side and verifier-side context layouts disagree on
-  both field order and ABI types; a conforming signer cannot be parsed by a
-  conforming verifier. Reported on `ethereum/ERCs#1186`.
-- **F-2** — EIP-8151's `ecrecover` predicate rejects the EIP-8476 `0xef0200`
-  marker, which breaks `permit`-style flows for opted-out accounts that EIP-8476
-  says should behave like ordinary EOAs. **Acknowledged by the EIP-8476 author,
-  reviewed and endorsed as matching the intended semantics; fix proposed in
-  [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605).**
+- **F-1 — open, blocking.** ERC-8010's signer-side and verifier-side context
+  layouts disagree on both field order and ABI types; a conforming signer cannot
+  be parsed by a conforming verifier. Reported on `ethereum/ERCs#1186`.
+- **F-2 — addressed upstream, awaiting review.** EIP-8151's `ecrecover`
+  predicate rejects the EIP-8476 `0xef0200` marker, which breaks `permit`-style
+  flows for opted-out accounts. The EIP-8476 author reviewed and endorsed the
+  proposed predicate change in
+  [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605); **it is not
+  an accepted standard until that PR merges**, so both behaviours stay modelled.
+- **F-3, F-4 — resolved** in EIP-8476 revision `f1a4071`; **F-6** acknowledged
+  there as a deliberate tradeoff; **F-5** is an upstream gap (opcode TBD), not an
+  action for this repo.
 
-F-3 (opt-out over an existing delegation) and F-4 (cross-chain scope) were
-resolved in EIP-8476 revision `f1a4071`; F-6 is acknowledged there as a
-deliberate tradeoff. F-5 (EIP-7851 opcode TBD) is an upstream gap, not an action
-for this repo.
+Scope note: the models are validated against the specifications and replayed
+against the published vectors. They are **not yet differentially tested against
+geth/revm**; that is roadmap item 3, not a current claim.
 
 
 ## For contributors and agents

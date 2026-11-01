@@ -84,9 +84,10 @@ is proposed in **ethereum/EIPs#12605**. The EIP-8476 author reviewed that change
 and confirmed it matches the intended semantics (permanent opt-out without
 revoking ordinary EOA ECDSA authorization); it now awaits review from the
 EIP-8151 authors. EIP-8476 commit `44c146e` references the proposed EIP-8151
-update and adds the combined `ecrecover` cases to its Test Cases section. Both
-the current (rejecting) and proposed (accepting) behaviours are modelled here and
-shipped as vectors.
+update and adds the combined `ecrecover` cases to its Test Cases section. This is
+**not an accepted standard change** until #12605 merges: the default model keeps
+the drafted rejecting behaviour, and the proposed behaviour is opt-in
+(`opt_out_eligible=True`, vectors section `eip8151_proposed`).
 
 ## F-3 — EIP-8476 over an existing delegation (RESOLVED upstream)
 

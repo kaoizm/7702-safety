@@ -15,8 +15,13 @@ state-trie `codeHash` remains `keccak256(0xef0200)`.
 | `0x` | plain EOA | `0x` | permitted | accepted | valid |
 | `0xef0100 ‖ delegate` | EIP-7702 delegation | raw | permitted | accepted (re-delegates) | valid |
 | `0xef0101 ‖ delegate` | EIP-7851, ECDSA burned | raw | **rejected** | **skipped** | **invalid** |
-| `0xef0200` | EIP-8476 opt-out | `0x` (code); `keccak256("")` (EXTCODEHASH) | **rejected** | **skipped** | valid |
+| `0xef0200` | EIP-8476 opt-out | `0x` (code); `keccak256("")` (EXTCODEHASH) | **rejected**[^draft] | **skipped** | valid |
 | anything else | contract | raw | **rejected** | skipped (not an EOA) | invalid |
+
+[^draft]: As drafted for EIP-8151. [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605)
+    proposes accepting exactly `0xef0200` with unchanged gas accounting; the
+    proposed behaviour is modelled separately and covered by the
+    `eip8151_proposed` vectors. Until that PR merges, this row is the standard.
 
 Two rows are easy to confuse and matter operationally:
 
