@@ -205,6 +205,18 @@
       "rpc_code_after": "0xef0200"
     },
     {
+      "case": "apply_over_existing_delegation",
+      "status": "applied",
+      "new_code": "0xef0200",
+      "gas_used": 33500
+    },
+    {
+      "case": "apply_over_ecdsa_disabled",
+      "status": "rejected",
+      "reason": "ecdsa_disabled_sender",
+      "new_code": "0xef0101aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
       "case": "non_empty_authorization_list",
       "status": "rejected",
       "reason": "non_empty_authorization_list",

@@ -4,7 +4,11 @@ Issues found while turning the four specs into executable tests. Each is
 reproducible with the suite. Severity is about *specification risk*, not
 exploitability.
 
-## F-1 — ERC-8010 signer and verifier layouts disagree (blocking)
+Status is tracked against the upstream drafts as of 2026-11-01:
+EIP-8476 at `ethereum/EIPs#12600` head `f1a4071`, ERC-8010 at
+`ethereum/ERCs#1186` head `6e5290c`, EIP-7851/8151 at their published drafts.
+
+## F-1 — ERC-8010 signer and verifier layouts disagree (BLOCKING, open)
 
 **Where:** ERC-8010, "Signer Side" vs "Verifier Side".
 
@@ -32,50 +36,84 @@ dangerous — two implementations disagreeing about *what was signed*.
 **Repro:** `tests/test_erc8010.py::TestLayouts::test_spec_layouts_conflict` and
 `::test_signer_wrapped_does_not_parse_as_verifier`.
 
+**Reported:** `ethereum/ERCs#1186` (comment), repo issue #1.
+
 **Suggestion:** pick `(authorization, init_to, init_data)` — the signer-side
 order — and state the ABI types explicitly in both sections. Add the round-trip
 vectors from `vectors/conformance.json`.
 
-## F-2 — EIP-8151 cannot distinguish "no delegation" from "delegation disabled" (informational)
+## F-2 — EIP-8151's predicate rejects the EIP-8476 marker (OPEN, cross-EIP)
 
-`is_permitted` only accepts empty code or `0xef0100 ‖ delegate`. Accounts with
-`0xef0101` or `0xef0200` are rejected — which is the intent for `0xef0101`
-(ECDSA burned) but means an opted-out account also fails `ecrecover`, breaking
-`permit`-style flows for a wallet that merely wanted to disable delegation.
-Verify this is intended before EIP-8476 ships; if not, EIP-8151's predicate
-needs a second case.
+EIP-8151's `ecrecover` restriction accepts only:
 
-## F-3 — EIP-8476 does not define opt-out over an existing delegation (blocking for implementers)
+```
+is_permitted = len(code) == 0 or (len(code) == 23 and code[:3] == 0xef0100)
+```
 
-The draft says an opt-out installs `0xef0200` but does not say what happens when
-the account already has `0xef0100` or `0xef0101`. Three defensible readings:
-reject, take precedence, or require a two-step revoke-then-opt-out. The suite
-rejects (`ACCOUNT_HAS_CODE`) to make the ambiguity visible instead of guessing.
-This matters for exchange hot wallets, which are the stated motivation.
+An EIP-8476 opted-out account has raw code `0xef0200`, so `ecrecover` returns
+empty for it. Every `permit`-style flow (ERC-2612 and friends) then fails for an
+account that EIP-8476 says "continues to behave as an ordinary EOA at the EVM
+level".
 
-## F-4 — Cross-chain replay is under-specified in all four drafts
+EIP-8476 `f1a4071` acknowledges the dependency (“Draft EIP-8151 ... would need
+to recognize the marker”) but the change itself belongs to **EIP-8151's** text.
+Concretely:
 
-Only the EIP-8476 thread raises it (Zealynx, 2026-10-30): `chain_id = 0`
-authorizations are valid on every 7702 chain where the nonce matches. No spec
-defines a required "opt out everywhere" procedure, and EIP-8151/7851 say nothing
-about chain scope. The suite models the per-chain rule; the measurement is
-roadmap item 3.
+```python
+is_permitted = (
+    len(code) == 0
+    or (len(code) == 23 and code[:3] == b"\xef\x01\x00")
+    or code == b"\xef\x02\x00"
+)
+```
 
-## F-5 — EIP-7851 `SETSELFDELEGATE_OPCODE` is TBD
+**Repro:** `tests/test_eip8151.py::TestECRecoverRestriction::test_opt_out_marker_rejected`
+(current behavior) and `tests/test_markers.py::TestEip8151Predicate`.
+
+**Suggestion:** if both drafts ship, EIP-8151 must add the third clause and both
+specs should reference each other explicitly.
+
+## F-3 — EIP-8476 over an existing delegation (RESOLVED upstream)
+
+Originally the draft did not say what happens when `0xef0200` is applied to an
+account that already has `0xef0100`. Revision `f1a4071` states: *"An existing
+EIP-7702 delegation is replaced directly; no preliminary clearing transaction is
+required."* The model now follows this
+(`tests/test_eip8476.py::test_replaces_existing_delegation`).
+
+One edge remains worth pinning: an EIP-7851 `0xef0101` account cannot originate
+an ECDSA transaction, so the transition `0xef0101 -> 0xef0200` is unreachable.
+If it ever became reachable it would re-enable ECDSA authority and break
+EIP-7851's irreversibility invariant. The suite rejects it explicitly
+(`test_ecdsa_disabled_sender_rejected`).
+
+## F-4 — Cross-chain replay (ADDRESSED upstream)
+
+The EIP-8476 draft now has an explicit per-chain paragraph: the marker exists
+only in the chain where the opt-out ran, a `chain_id = 0` authorization stays
+valid on every other 7702 chain where the account has not opted out and the
+nonce matches, and an owner must opt out on each chain including ones never
+used, funding gas there first.
+
+The operational measurement is still missing from the ecosystem and remains
+roadmap item 3 (`tools/scan_replay.py`).
+
+## F-5 — EIP-7851 `SETSELFDELEGATE_OPCODE` is TBD (open)
 
 The parameter table still says `TBD`. Until an opcode is assigned, no client can
 implement it and no bytecode can be written. The state-transition model here is
 opcode-agnostic so it stays valid once a number is chosen.
 
-## F-6 — EIP-8476's raw/EVM code split creates `EXTCODEHASH` divergence
+## F-6 — EIP-8476's raw/EVM code split and `EXTCODEHASH` (ACKNOWLEDGED upstream)
 
-Refinement (2026-10-31) keeps the marker in `eth_getCode`/`eth_getProof` while
-the EVM sees empty code. That means `EXTCODEHASH(opted_out)` is neither the
-empty-code hash nor `keccak256(0xef0200)` in a self-consistent way for every
-consumer, and state proofs carry a code hash the EVM does not execute. Needs
-explicit consensus-test coverage, not just prose.
+Revision `f1a4071` explicitly accepts the divergence: the state-trie
+`codeHash` differs from `EXTCODEHASH` for marked accounts, and on-chain
+contracts cannot distinguish an opted-out account from an ordinary EOA. It is
+documented as a deliberate tradeoff to preserve ERC-721/1155 receiver hooks.
+No action for this suite beyond keeping the visibility model tested
+(`tests/test_eip8476.py::test_evm_sees_empty_but_rpc_sees_marker`).
 
-## F-7 — No test vectors exist for any of the four drafts (the reason for this repo)
+## F-7 — No test vectors existed for any of the four drafts (the reason for this repo)
 
 `EIP-7851`: none. `EIP-8151`: reference implementation, no vectors.
 `EIP-8476`: none. `ERC-8010`: "Test Cases: TBD". This repository is the gap

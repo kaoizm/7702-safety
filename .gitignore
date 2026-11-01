@@ -8,3 +8,6 @@ cache/
 .env
 .idea/
 .vscode/
+tools/gh/
+tools/gh.zip
+.ghconfig/

@@ -4,7 +4,7 @@ import unittest
 
 from w7702 import eip8476
 from w7702.eip8476 import OptOutStatus, RejectReason, SetCodeTransaction
-from w7702.markers import DELEGATION_PREFIX, OPT_OUT_MARKER
+from w7702.markers import DELEGATION_PREFIX, ECDSA_DISABLED_PREFIX, OPT_OUT_MARKER
 
 SENDER = bytes.fromhex("28" * 20)
 
@@ -46,11 +46,22 @@ class TestTransition(unittest.TestCase):
         self.assertIs(result.status, OptOutStatus.ALREADY_OPTED_OUT)
         self.assertEqual(result.new_code, OPT_OUT_MARKER)
 
-    def test_refuses_existing_delegation(self):
+    def test_replaces_existing_delegation(self):
+        # EIP-8476 rev. 2026-11-01: an existing EIP-7702 delegation is
+        # replaced directly; no preliminary clearing transaction is required.
         result = eip8476.apply_opt_out(
             DELEGATION_PREFIX + bytes.fromhex("aa" * 20), valid_tx())
+        self.assertIs(result.status, OptOutStatus.APPLIED)
+        self.assertEqual(result.new_code, OPT_OUT_MARKER)
+
+    def test_ecdsa_disabled_sender_rejected(self):
+        # EIP-7851 forbids ECDSA-signed transactions from 0xef0101 senders, so
+        # this path is unreachable; the model rejects it to keep the
+        # irreversibility invariant explicit.
+        result = eip8476.apply_opt_out(
+            ECDSA_DISABLED_PREFIX + bytes.fromhex("aa" * 20), valid_tx())
         self.assertIs(result.status, OptOutStatus.REJECTED)
-        self.assertEqual(result.reason, RejectReason.ACCOUNT_HAS_CODE)
+        self.assertEqual(result.reason, RejectReason.ECDSA_DISABLED_SENDER)
 
     def test_rejected_form_does_not_change_state(self):
         tx = SetCodeTransaction(sender=SENDER, destination=SENDER, value=1)

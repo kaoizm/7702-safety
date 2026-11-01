@@ -41,6 +41,7 @@ class RejectReason(str, Enum):
     NON_EMPTY_DATA = "non_empty_data"
     NON_EMPTY_ACCESS_LIST = "non_empty_access_list"
     ACCOUNT_HAS_CODE = "account_has_code"
+    ECDSA_DISABLED_SENDER = "ecdsa_disabled_sender"
 
 
 @dataclass(frozen=True)
@@ -83,14 +84,21 @@ def apply_opt_out(raw_code: bytes, tx: SetCodeTransaction) -> OptOutResult:
     kind = classify(raw_code)
     if kind is CodeKind.OPT_OUT:
         return OptOutResult(OptOutStatus.ALREADY_OPTED_OUT, 0, raw_code)
-    if kind is not CodeKind.EMPTY:
-        # The spec does not state how opt-out interacts with an existing
-        # 0xef0100/0xef0101 delegation; we refuse rather than guess.
+    if kind in (CodeKind.EMPTY, CodeKind.DELEGATION):
+        # EIP-8476 (rev. 2026-11-01): "An existing EIP-7702 delegation is
+        # replaced directly; no preliminary clearing transaction is required."
+        return OptOutResult(OptOutStatus.APPLIED, OPT_OUT_GAS, OPT_OUT_MARKER)
+    if kind is CodeKind.ECDSA_DISABLED:
+        # Unreachable in practice: EIP-7851 makes any ECDSA-authenticated
+        # transaction from a 0xef0101 sender invalid, so such an account cannot
+        # originate the opt-out transaction. Rejected explicitly because
+        # 0xef0200 is ECDSA-enabled state and would otherwise undo 0xef0101.
         return OptOutResult(
-            OptOutStatus.REJECTED, 0, raw_code, RejectReason.ACCOUNT_HAS_CODE
+            OptOutStatus.REJECTED, 0, raw_code, RejectReason.ECDSA_DISABLED_SENDER
         )
-
-    return OptOutResult(OptOutStatus.APPLIED, OPT_OUT_GAS, OPT_OUT_MARKER)
+    return OptOutResult(
+        OptOutStatus.REJECTED, 0, raw_code, RejectReason.ACCOUNT_HAS_CODE
+    )
 
 
 def authorization_eligible(authority_raw_code: bytes) -> bool:

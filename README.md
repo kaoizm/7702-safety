@@ -60,14 +60,19 @@ docs/                   Compatibility matrix, findings, roadmap
 ## Findings so far
 
 Seven specification issues are documented in
-[docs/02-findings.md](docs/02-findings.md). The blocking ones:
+[docs/02-findings.md](docs/02-findings.md). Two are still open:
 
 - **F-1** — ERC-8010's signer-side and verifier-side context layouts disagree on
   both field order and ABI types; a conforming signer cannot be parsed by a
-  conforming verifier.
-- **F-3** — EIP-8476 does not define opt-out over an account that already has a
-  delegation.
-- **F-6** — EIP-8476's raw-code/EVM-code split makes `EXTCODEHASH` diverge.
+  conforming verifier. Reported on `ethereum/ERCs#1186`.
+- **F-2** — EIP-8151's `ecrecover` predicate rejects the EIP-8476 `0xef0200`
+  marker, which breaks `permit`-style flows for opted-out accounts that EIP-8476
+  says should behave like ordinary EOAs.
+
+F-3 (opt-out over an existing delegation) and F-4 (cross-chain scope) were
+resolved in EIP-8476 revision `f1a4071`; F-6 is acknowledged there as a
+deliberate tradeoff.
+
 
 ## For contributors and agents
 

@@ -186,6 +186,26 @@ def build() -> dict:
             "rpc_code_after": hx(eip8476.raw_code_for_rpc(result.new_code)),
         }
     )
+    over_delegation = eip8476.apply_opt_out(
+        DELEGATION_PREFIX + DELEGATE_A, good)
+    doc["eip8476"].append(
+        {
+            "case": "apply_over_existing_delegation",
+            "status": over_delegation.status.value,
+            "new_code": hx(over_delegation.new_code),
+            "gas_used": over_delegation.gas_used,
+        }
+    )
+    over_disabled = eip8476.apply_opt_out(
+        ECDSA_DISABLED_PREFIX + DELEGATE_A, good)
+    doc["eip8476"].append(
+        {
+            "case": "apply_over_ecdsa_disabled",
+            "status": over_disabled.status.value,
+            "reason": over_disabled.reason.value if over_disabled.reason else None,
+            "new_code": hx(over_disabled.new_code),
+        }
+    )
     for name, tx in bad_forms.items():
         rejected = eip8476.apply_opt_out(b"", tx)
         doc["eip8476"].append(
