@@ -57,7 +57,24 @@ docs/                   Compatibility matrix, findings, roadmap
 - [ ] Client-level (geth / revm) differential tests
 - [ ] Cross-chain `chain_id = 0` replay measurement
 
-## Contributing
+## Findings so far
+
+Seven specification issues are documented in
+[docs/02-findings.md](docs/02-findings.md). The blocking ones:
+
+- **F-1** — ERC-8010's signer-side and verifier-side context layouts disagree on
+  both field order and ABI types; a conforming signer cannot be parsed by a
+  conforming verifier.
+- **F-3** — EIP-8476 does not define opt-out over an account that already has a
+  delegation.
+- **F-6** — EIP-8476's raw-code/EVM-code split makes `EXTCODEHASH` diverge.
+
+## For contributors and agents
+
+- [AGENTS.md](AGENTS.md) — operating rules for any AI agent (humans too)
+- [CONTRIBUTING.md](CONTRIBUTING.md) — PR expectations
+- [SECURITY.md](SECURITY.md) — disclosure policy
+- [.claude/skills/eip-conformance/SKILL.md](.claude/skills/eip-conformance/SKILL.md) — repo-specific skill
 
 Every claim in `docs/` cites a spec section. If a test disagrees with a spec,
 the spec wins — open an issue with the section number.

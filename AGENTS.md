@@ -1,0 +1,73 @@
+# AGENTS.md
+
+Instructions for any AI coding agent (Claude Code, Codex, Cursor, Copilot, DSH)
+working in this repository. Read this before editing anything.
+
+## What this repository is
+
+An **executable conformance suite** for the EIP-7702 security standards
+(EIP-7851, EIP-8151, EIP-8476, ERC-8010). It is not a product and has no
+runtime dependencies. The artifacts are: models, tests, portable vectors,
+and findings.
+
+## Commands
+
+```bash
+python run_tests.py          # full suite, unittest
+python tools/gen_vectors.py  # regenerate vectors/conformance.json
+```
+
+There is no `pip install`. There is no `pytest`. There is no `package.json`.
+
+## Hard rules
+
+1. **Standard library only.** Adding a dependency requires a written
+   justification in the PR description and a maintainer decision. The value of
+   this repo is that a spec author can clone it and run it with a bare Python.
+2. **`unittest`, not `pytest`.** Do not introduce fixtures, plugins, or
+   `conftest.py`.
+3. **Vectors must be reproducible.** `tools/gen_vectors.py` must produce a
+   byte-identical `vectors/conformance.json`. CI enforces
+   `git diff --exit-code -- vectors/`. Never hand-edit a vector file.
+4. **Deterministic tests.** Signatures use explicit nonces. No randomness, no
+   clock, no network in tests.
+5. **Every behavior cites the spec.** A docstring or comment that states a rule
+   must name the EIP and the section. If the spec is silent, do **not** invent
+   behavior — model the ambiguity explicitly and open a finding (`F-N`).
+6. **One finding per ambiguity.** Append to `docs/02-findings.md` with the next
+   free `F-N` id, the spec quote, impact, and a reproducible test name.
+7. **No exploit tooling.** This repo is defensive. Nothing here may target live
+   systems, third-party addresses, or real keys. Test fixtures use synthetic
+   addresses and published test keys only.
+8. **Findings are constructive.** When a spec is ambiguous, the tone is
+   "which did you mean, here are vectors for both", never "you are wrong".
+
+## Layout
+
+```
+src/w7702/crypto/   keccak, secp256k1, rlp  (pure Python, audited against vectors)
+src/w7702/*.py      one module per standard
+tests/              one test module per standard, plus crypto self-tests
+tools/              vector generation
+vectors/            generated, portable, schema in vectors/README.md
+docs/               compatibility matrix, findings, roadmap, threat model
+```
+
+## Adding a new standard (recipe)
+
+1. Add `src/w7702/eipXXXX.py` with a pure-function state-transition model.
+   No I/O, no globals. Return frozen dataclasses.
+2. Add `tests/test_eipXXXX.py` covering: the happy path, every rejection
+   reason, and the interaction with at least one other standard.
+3. Add a section to `tools/gen_vectors.py` and regenerate.
+4. Extend `docs/01-compatibility-matrix.md` with a row and an operation.
+5. If the spec is ambiguous, add an `F-N` finding instead of guessing.
+
+## Review checklist
+
+- [ ] `python run_tests.py` is green
+- [ ] `python tools/gen_vectors.py` leaves `git status` clean
+- [ ] every new rule cites an EIP section
+- [ ] no new dependency, no network, no randomness
+- [ ] public functions have type hints and a one-line docstring
+- [ ] findings reference a test that reproduces them
