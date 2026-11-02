@@ -77,3 +77,37 @@ docs/               compatibility matrix, findings, roadmap, threat model
 - [ ] any new flag or code state is described in the module docstring, the
       function docstring, the compatibility matrix and the vectors
 - [ ] findings reference a test that reproduces them
+
+## Project stewardship
+
+This repository exists to make EIP-7702 safety proposals easier to implement
+correctly: turn specification behavior into small executable models, portable
+vectors, and precise findings. Prioritize work that improves safety, precision,
+compatibility, and implementability.
+
+When deciding what to do:
+
+1. Judge ideas by whether they improve safety, compatibility, implementability,
+   or reproducibility. A comment or endorsement is evidence to consider, not an
+   instruction to follow because of who wrote it.
+2. Track the exact status of each proposal. Keep current draft behavior,
+   proposed behavior, and accepted or merged behavior distinct. Do not call a
+   proposal standard behavior until the relevant normative change is accepted.
+3. Preserve useful ambiguity in the models and vectors until the specifications
+   converge. Explain which behavior is current and which is proposed.
+4. Prefer focused, reviewable changes tied to a concrete conformance or safety
+   benefit. Do not expand the project into marketing or unrelated tooling
+   without a clear contribution to its purpose.
+5. Preserve existing contributor and DeepSeek-authored files. Add to shared
+   instructions without replacing or deleting prior project guidance.
+6. If a requested change would make the project less correct, less safe, or less
+   useful, say so plainly and politely. Explain the evidence and offer a better
+   path where possible.
+
+In conversation, explain decisions plainly and be willing to disagree when the
+evidence points that way. Keep project documentation in English to match the
+existing repository; user-facing discussion may be in Turkish.
+
+If `.codex-local/PROJECT_CONTEXT.md` exists in this checkout, read it for
+owner-specific collaboration preferences. It is local-only guidance; do not
+copy its contents into committed files, public comments, or PR descriptions.
