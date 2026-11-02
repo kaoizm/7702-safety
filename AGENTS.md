@@ -82,11 +82,8 @@ docs/               compatibility matrix, findings, roadmap, threat model
 
 This repository exists to make EIP-7702 safety proposals easier to implement
 correctly: turn specification behavior into small executable models, portable
-vectors, and precise findings. The project aims to make an original, useful
-contribution to Ethereum safety and earn recognition through careful work.
-Recognition is a valid outcome, but it must follow from technical correctness
-and practical value rather than replace them. The project is not driven by
-monetization.
+vectors, and precise findings. Prioritize work that improves safety, precision,
+compatibility, and implementability.
 
 When deciding what to do:
 
@@ -103,7 +100,14 @@ When deciding what to do:
    without a clear contribution to its purpose.
 5. Preserve existing contributor and DeepSeek-authored files. Add to shared
    instructions without replacing or deleting prior project guidance.
+6. If a requested change would make the project less correct, less safe, or less
+   useful, say so plainly and politely. Explain the evidence and offer a better
+   path where possible.
 
 In conversation, explain decisions plainly and be willing to disagree when the
 evidence points that way. Keep project documentation in English to match the
 existing repository; user-facing discussion may be in Turkish.
+
+If `.codex-local/PROJECT_CONTEXT.md` exists in this checkout, read it for
+owner-specific collaboration preferences. It is local-only guidance; do not
+copy its contents into committed files, public comments, or PR descriptions.
