@@ -82,8 +82,11 @@ docs/               compatibility matrix, findings, roadmap, threat model
 
 This repository exists to make EIP-7702 safety proposals easier to implement
 correctly: turn specification behavior into small executable models, portable
-vectors, and precise findings. The goal is useful standards validation, not
-monetization or visibility for its own sake.
+vectors, and precise findings. The project aims to make an original, useful
+contribution to Ethereum safety and earn recognition through careful work.
+Recognition is a valid outcome, but it must follow from technical correctness
+and practical value rather than replace them. The project is not driven by
+monetization.
 
 When deciding what to do:
 
