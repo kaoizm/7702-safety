@@ -61,10 +61,10 @@ level".
 EIP-8476 `f1a4071` acknowledges the compatibility requirement. The EIP-8476
 author initially asked for the predicate change in EIP-8151, and the proposal
 was opened as [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605).
-On 2026-11-02, EIP-8151 author Colinlyguo said the expected behavior looks good
-but recommended specifying the extension in EIP-8476 and leaving EIP-8151
-unchanged. The normative location is now under discussion; the expected result
-is not disputed. The compatible predicate, independent of which EIP owns it, is:
+On 2026-11-02, an EIP-8151 author said the expected behavior looks good but
+recommended specifying the extension in EIP-8476 and leaving EIP-8151 unchanged.
+The normative location is now under discussion; the expected result is not
+disputed. The compatible predicate, independent of which EIP owns it, is:
 
 ```python
 is_permitted = (
@@ -87,7 +87,7 @@ separate until that normative placement is settled.
 opted-out account should retain ordinary ECDSA authorization, including
 `ecrecover`-based flows such as ERC-2612 `permit`. The EIP-8476 author reviewed
 the proposed predicate in #12605 and confirmed it matches the intended
-semantics. Colinlyguo then recommended putting the compatibility rule in
+semantics. An EIP-8151 author then recommended putting the compatibility rule in
 EIP-8476 and leaving EIP-8151 unchanged. EIP-8476 PR #12600 includes combined
 test cases, while #12605 still proposes an EIP-8151 text change. Both PRs remain
 open, so **no normative change has been accepted**. The default model continues
