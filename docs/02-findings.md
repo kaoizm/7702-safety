@@ -4,8 +4,8 @@ Issues found while turning the four specs into executable tests. Each is
 reproducible with the suite. Severity is about *specification risk*, not
 exploitability.
 
-Status is tracked against the upstream drafts as of 2026-11-01:
-EIP-8476 at `ethereum/EIPs#12600` head `f1a4071`, ERC-8010 at
+Status is tracked against the upstream drafts as of 2026-11-02:
+EIP-8476 at `ethereum/EIPs#12600` head `44c146e`, ERC-8010 at
 `ethereum/ERCs#1186` head `6e5290c`, EIP-7851/8151 at their published drafts.
 
 ## F-1 — ERC-8010 signer and verifier layouts disagree (BLOCKING, open)
@@ -45,7 +45,7 @@ dangerous — two implementations disagreeing about *what was signed*.
 order — and state the ABI types explicitly in both sections. Add the round-trip
 vectors from `vectors/conformance.json`.
 
-## F-2 — EIP-8151's predicate rejects the EIP-8476 marker (ACKNOWLEDGED; fix proposed)
+## F-2 — EIP-8151's predicate rejects the EIP-8476 marker (ACKNOWLEDGED; placement under discussion)
 
 EIP-8151's `ecrecover` restriction accepts only:
 
@@ -58,9 +58,13 @@ empty for it. Every `permit`-style flow (ERC-2612 and friends) then fails for an
 account that EIP-8476 says "continues to behave as an ordinary EOA at the EVM
 level".
 
-EIP-8476 `f1a4071` acknowledges the dependency (“Draft EIP-8151 ... would need
-to recognize the marker”) but the change itself belongs to **EIP-8151's** text.
-Concretely:
+EIP-8476 `f1a4071` acknowledges the compatibility requirement. The EIP-8476
+author initially asked for the predicate change in EIP-8151, and the proposal
+was opened as [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605).
+On 2026-11-02, EIP-8151 author Colinlyguo said the expected behavior looks good
+but recommended specifying the extension in EIP-8476 and leaving EIP-8151
+unchanged. The normative location is now under discussion; the expected result
+is not disputed. The compatible predicate, independent of which EIP owns it, is:
 
 ```python
 is_permitted = (
@@ -73,21 +77,23 @@ is_permitted = (
 **Repro:** `tests/test_eip8151.py::TestECRecoverRestriction::test_opt_out_marker_rejected`
 (current behavior) and `tests/test_markers.py::TestEip8151Predicate`.
 
-**Suggestion:** if both drafts ship, EIP-8151 must add the third clause and both
-specs should reference each other explicitly.
+**Suggestion:** the two specifications must define a consistent result before
+either activates, regardless of activation order. The authors are considering
+whether EIP-8151 owns the predicate exception (#12605) or EIP-8476 owns the
+cross-EIP compatibility rule. Keep the model's default and proposed behaviors
+separate until that normative placement is settled.
 
-**Status (2026-11-01):** accepted as a genuine compatibility issue by the
-EIP-8476 author, who clarified in `ethereum/EIPs#12600` commit `56ec531` that
-opt-out "removes only EIP-7702 delegation capability", so opted-out accounts
-retain `ecrecover`-based flows such as ERC-2612 `permit`. The predicate change
-is proposed in **ethereum/EIPs#12605**. The EIP-8476 author reviewed that change
-and confirmed it matches the intended semantics (permanent opt-out without
-revoking ordinary EOA ECDSA authorization); it now awaits review from the
-EIP-8151 authors. EIP-8476 commit `44c146e` references the proposed EIP-8151
-update and adds the combined `ecrecover` cases to its Test Cases section. This is
-**not an accepted standard change** until #12605 merges: the default model keeps
-the drafted rejecting behaviour, and the proposed behaviour is opt-in
-(`allow_eip8476_opt_out_marker=True`, vectors section `eip8151_proposed`).
+**Status (2026-11-02):** the EIP-8476 author and EIP-8151 author agree that an
+opted-out account should retain ordinary ECDSA authorization, including
+`ecrecover`-based flows such as ERC-2612 `permit`. The EIP-8476 author reviewed
+the proposed predicate in #12605 and confirmed it matches the intended
+semantics. Colinlyguo then recommended putting the compatibility rule in
+EIP-8476 and leaving EIP-8151 unchanged. EIP-8476 PR #12600 includes combined
+test cases, while #12605 still proposes an EIP-8151 text change. Both PRs remain
+open, so **no normative change has been accepted**. The default model continues
+to represent current EIP-8151 draft behavior; the expected compatible behavior
+is opt-in (`allow_eip8476_opt_out_marker=True`, vectors section
+`eip8151_proposed`).
 
 ## F-3 — EIP-8476 over an existing delegation (RESOLVED upstream)
 

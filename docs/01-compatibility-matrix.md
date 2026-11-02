@@ -1,6 +1,6 @@
 # Compatibility matrix: EIP-7702 security extensions
 
-Status: draft, 2026-11-01. Every row cites a spec section; disagreements are
+Status: draft, 2026-11-02. Every row cites a spec section; disagreements are
 filed in [02-findings.md](02-findings.md).
 
 ## 1. Account code states
@@ -22,16 +22,20 @@ state-trie `codeHash` remains `keccak256(0xef0200)`.
     is not activated. [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605)
     proposes accepting exactly `0xef0200` with unchanged gas accounting; that
     proposed behaviour is modelled separately and covered by the
-    `eip8151_proposed` vectors.
+    `eip8151_proposed` vectors. The EIP-8151 author supports the expected result
+    but prefers EIP-8476 to specify the compatibility rule and leave EIP-8151
+    unchanged; the normative location is unresolved (F-2).
 
 Two rows are easy to confuse and matter operationally:
 
 * `0xef0101` burns ECDSA but keeps wallet code in control; `0xef0200` keeps
   ECDSA but forbids delegation. They are **not** interchangeable.
 * Under EIP-8151 **as drafted**, both `0xef0101` and `0xef0200` fail
-  `ecrecover`, so `permit`-style approvals stop working for both. EIP-8476
-  expects EIP-8151 to add an exception for the marker; until it does, the two
-  drafts disagree (F-2).
+  `ecrecover`, so `permit`-style approvals stop working for both. The EIP-8476
+  author and an EIP-8151 author agree that opted-out accounts should retain
+  ordinary ECDSA authorization. The EIP-8151 author prefers putting the
+  compatibility rule in EIP-8476; both PRs remain open and the normative
+  location is unresolved (F-2).
 
 ## 2. Operation × standard
 
