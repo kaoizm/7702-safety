@@ -36,7 +36,7 @@ no rule that said "an authorization list is not a transfer".
 | T4 | Cross-chain replay | `chain_id = 0` tuple valid wherever the nonce matches, including chains never used | per-chain opt-out (EIP-8476) or explicit `chain_id` on every authorization |
 | T5 | Delegation invisible in the wallet | user sees a normal tx; `0xef0100` never shown | surface raw code from `eth_getCode`/`eth_getProof` |
 | T6 | ECDSA-disable confusion | `0xef0101` burns the key; `0xef0200` keeps it but blocks delegation | treat them as different states in every UI and policy |
-| T7 | `permit` silently broken | opted-out account cannot use ERC-2612 flows if EIP-8151 lands unchanged | EIP-8151 predicate must accept `0xef0200` (F-2) |
+| T7 | `permit` silently broken | opted-out account cannot use ERC-2612 flows under the current EIP-8151 draft | a cross-EIP rule must preserve `ecrecover` for `0xef0200`; normative location is under discussion (F-2) |
 
 ## 4. Control map
 
@@ -44,7 +44,7 @@ no rule that said "an authorization list is not a transfer".
 | --- | --- | --- |
 | Permanent opt-out for accounts that never delegate | EIP-8476 | draft, PR open |
 | Irreversible ECDSA burn after migration to wallet code | EIP-7851 | draft, opcode TBD |
-| `ecrecover` respects account code state | EIP-8151 | draft, predicate misses `0xef0200` |
+| `ecrecover` respects account code state | EIP-8151 / EIP-8476 | current EIP-8151 draft rejects `0xef0200`; compatibility rule acknowledged, placement under discussion (F-2) |
 | Signatures verifiable before delegation lands | ERC-8010 | draft, layout contradiction (F-1) |
 | Client-side conformance vectors | this repo | shipped |
 

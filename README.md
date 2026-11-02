@@ -69,12 +69,14 @@ Seven specification issues are documented in
 - **F-1 — open, blocking.** ERC-8010's signer-side and verifier-side context
   layouts disagree on both field order and ABI types; a conforming signer cannot
   be parsed by a conforming verifier. Reported on `ethereum/ERCs#1186`.
-- **F-2 — addressed upstream, awaiting review.** EIP-8151's `ecrecover`
-  predicate rejects the EIP-8476 `0xef0200` marker, which breaks `permit`-style
-  flows for opted-out accounts. The EIP-8476 author reviewed and endorsed the
-  proposed predicate change in
-  [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605); **it is not
-  an accepted standard until that PR merges**, so both behaviours stay modelled.
+- **F-2 — compatibility acknowledged; specification location unresolved.** The
+  current EIP-8151 draft rejects `0xef0200` in `ecrecover`, breaking `permit`-
+  style flows for opted-out accounts. Both the EIP-8476 author and EIP-8151
+  author support preserving those flows, but the EIP-8151 author prefers
+  specifying the exception in EIP-8476 and leaving EIP-8151 unchanged. PRs
+  [ethereum/EIPs#12605](https://github.com/ethereum/EIPs/pull/12605) and
+  [ethereum/EIPs#12600](https://github.com/ethereum/EIPs/pull/12600) remain open;
+  no normative change has been accepted, so both behaviours stay modelled.
 - **F-3, F-4 — resolved** in EIP-8476 revision `f1a4071`; **F-6** acknowledged
   there as a deliberate tradeoff; **F-5** is an upstream gap (opcode TBD), not an
   action for this repo.
